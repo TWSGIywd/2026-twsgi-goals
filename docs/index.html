@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 年度目標達成進度表</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .wrapper {
+    text-align: center;
+    padding: 40px;
+  }
+  h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+  }
+  p {
+    color: #888;
+    margin-bottom: 36px;
+    font-size: 14px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  a.card {
+    display: block;
+    background: #fff;
+    border-radius: 14px;
+    padding: 32px 20px;
+    text-decoration: none;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  a.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+  a.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+  }
+  .c1::before { background: #3498db; }
+  .c2::before { background: #e67e22; }
+  .c3::before { background: #2ecc71; }
+  .c4::before { background: #9b59b6; }
+  .card-sub {
+    font-size: 13px;
+    color: #aaa;
+    font-weight: 400;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <h1>2026 年度目標達成進度表</h1>
+  <p>請選擇部別查看報表</p>
+  <div class="cards">
+    <a class="card c1" href="壯年部_統計.html">壯年部<div class="card-sub">點擊查看</div></a>
+    <a class="card c2" href="婦人部_統計.html">婦人部<div class="card-sub">點擊查看</div></a>
+    <a class="card c3" href="男子部_統計.html">男子部<div class="card-sub">點擊查看</div></a>
+    <a class="card c4" href="女子部_統計.html">女子部<div class="card-sub">點擊查看</div></a>
+  </div>
+</div>
+</body>
+</html>

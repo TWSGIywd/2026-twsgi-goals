@@ -1,0 +1,3621 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 年度目標 壯年部 統計</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* ===== Header ===== */
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 4px;
+  }
+
+  .report-date {
+    font-size: 14px;
+    color: #888;
+  }
+
+  /* ===== 儀表板：總覽卡片 ===== */
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+
+  .card.card-personal::before  { background: #3498db; }
+  .card.card-gohonzon::before  { background: #27ae60; }
+  .card.card-mycreation::before { background: #9b59b6; }
+  .card.card-active::before    { background: #e67e22; }
+
+  .card-title {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .card-rate {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .card-personal .card-rate  { color: #2980b9; }
+  .card-gohonzon .card-rate  { color: #27ae60; }
+  .card-mycreation .card-rate { color: #8e44ad; }
+  .card-active .card-rate    { color: #d35400; }
+
+  .card-detail {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .card-done {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    background: #e8f8f5;
+    color: #1abc9c;
+  }
+
+  /* 圓環進度 */
+  .ring-wrapper {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 8px;
+    position: relative;
+  }
+
+  .ring-wrapper svg {
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 8;
+  }
+
+  .ring-progress {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+
+  .ring-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* ===== 中間區塊：排行榜 + 分佈 ===== */
+  .mid-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 900px) {
+    .mid-section { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 16px;
+  }
+
+  /* 分頁 tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 20px;
+    background: #eef1f5;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: #3498db;
+    color: #fff;
+  }
+
+  /* 排行榜列表 */
+  .rank-list {
+    list-style: none;
+  }
+
+  .rank-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    gap: 12px;
+  }
+
+  .rank-item:last-child {
+    border-bottom: none;
+  }
+
+  .rank-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .rank-1 { background: #fff8e1; color: #f9a825; }
+  .rank-2 { background: #f3f3f3; color: #757575; }
+  .rank-3 { background: #fff3e0; color: #ef6c00; }
+  .rank-other { background: #f5f5f5; color: #999; }
+
+  .rank-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rank-district {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .rank-area {
+    font-size: 11px;
+    color: #999;
+  }
+
+  .rank-bar-wrapper {
+    flex: 0 0 120px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rank-bar {
+    flex: 1;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .rank-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #74b9ff, #0984e3);
+    transition: width 0.4s ease;
+  }
+
+  .rank-rate {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* 分佈長條 */
+  .dist-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+
+  .dist-label {
+    width: 80px;
+    font-size: 13px;
+    text-align: right;
+    color: #555;
+    flex-shrink: 0;
+  }
+
+  .dist-bar {
+    flex: 1;
+    height: 24px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .dist-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    transition: width 0.4s ease;
+    min-width: fit-content;
+  }
+
+  .dist-count {
+    font-size: 13px;
+    font-weight: 600;
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .fill-100 { background: #a8e6cf; color: #1e6e34; }
+  .fill-80  { background: #b8d4e3; color: #1a4a6e; }
+  .fill-50  { background: #c5cae9; color: #3a3f78; }
+  .fill-30  { background: #d7d2e8; color: #5a4f7a; }
+  .fill-0   { background: #e0e0e0; color: #666; }
+
+  /* ===== 搜尋列 ===== */
+  .search-bar {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .search-input {
+    padding: 10px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 280px;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+
+  .search-hint {
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  /* ===== 資料表格 ===== */
+  .table-wrapper {
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 1200px;
+    font-size: 13px;
+  }
+
+  /* 表頭 */
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 10px 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+  }
+
+  thead tr:first-child th {
+    background: #34495e;
+  }
+
+  .cat-personal  { background: #2980b9 !important; }
+  .cat-gohonzon  { background: #27ae60 !important; }
+  .cat-mycreation { background: #8e44ad !important; }
+  .cat-active    { background: #d35400 !important; }
+
+  /* 兩年三倍欄位特殊標記 */
+  .cat-twoyear {
+    background: #1a5276 !important;
+    position: relative;
+  }
+
+  .cat-twoyear::after {
+    content: 'NEW';
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 9px;
+    background: #f39c12;
+    color: #fff;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+
+  thead tr:nth-child(2) th {
+    background: #3d566e;
+    font-weight: 500;
+    font-size: 12px;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  thead tr:nth-child(2) th.sortable {
+    cursor: pointer;
+  }
+
+  thead tr:nth-child(2) th.sortable:hover {
+    background: #4a6a85;
+  }
+
+  thead tr:nth-child(2) th.sortable .sort-arrow {
+    font-size: 10px;
+    margin-left: 3px;
+    opacity: 0.5;
+  }
+
+  thead tr:nth-child(2) th.sortable.sorted .sort-arrow {
+    opacity: 1;
+  }
+
+  /* 資料列 */
+  tbody td {
+    padding: 7px 8px;
+    border: 1px solid #eaeaea;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  td.text-left {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  tr.group-odd td.text-left { background: #f7f9fc; }
+
+  /* 總計列 */
+  tr.total-row td {
+    font-weight: 700;
+    background: #eef2f7 !important;
+    border-top: 2px solid #7f8c8d;
+  }
+
+  /* 兩年三倍欄位底色 */
+  .cell-twoyear {
+    background: #eaf2f8;
+  }
+
+  tr.total-row .cell-twoyear {
+    background: #d4e6f1 !important;
+  }
+
+  /* ===== 達成率色階（柔和版）===== */
+  .rate-100 { background-color: #d4edda; color: #1e6e34; }   /* ≥100% 薄荷綠 */
+  .rate-80  { background-color: #d1ecf1; color: #0c5460; }   /* ≥80%  天空藍 */
+  .rate-50  { background-color: #dee2f1; color: #3a3f78; }   /* ≥50%  薰衣草 */
+  .rate-30  { background-color: #e8e5ef; color: #5a4f7a; }   /* ≥30%  淡紫灰 */
+
+  /* 達成數凸顯 */
+  td.cell-done {
+    background: #e8f8f5;
+    font-weight: 700;
+    color: #148f77;
+  }
+
+  tr.total-row td.cell-done {
+    background: #d1f2eb !important;
+  }
+
+  /* 類別分隔線 */
+  .cat-divider {
+    border-left: 3px solid #bdc3c7 !important;
+  }
+
+  /* ===== 圖例 ===== */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+  }
+
+  /* ===== 頁尾 ===== */
+  footer {
+    text-align: center;
+    margin-top: 24px;
+    padding: 16px;
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  /* ===== 下載按鈕列 ===== */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-pdf {
+    background: #e74c3c;
+    color: #fff;
+  }
+
+  .btn-pdf:hover { background: #c0392b; }
+
+  .btn-csv {
+    background: #27ae60;
+    color: #fff;
+  }
+
+  .btn-csv:hover { background: #219a52; }
+
+  /* ===== 列印（整頁） ===== */
+  @media print {
+    body { padding: 0; background: #fff; }
+    .toolbar { display: none; }
+    .search-bar { display: none; }
+    .table-wrapper { box-shadow: none; overflow: visible; }
+    .container { max-width: 100%; padding: 8px; }
+    thead th { position: static; }
+    table { font-size: 10px; min-width: unset; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>2026 年度目標 壯年部 達成進度表</h1>
+  <p class="report-date">製表日期：2026-03-21</p>
+</header>
+
+
+<div class="dashboard">
+  <div class="card card-personal">
+    <div class="card-title">個人資料卡（新入會）</div>
+    <div class="ring-wrapper">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle class="ring-bg" cx="50" cy="50" r="45"/>
+        <circle class="ring-progress" cx="50" cy="50" r="45"
+                stroke="#2980b9"
+                stroke-dasharray="282.74"
+                stroke-dashoffset="221.86537366548043"/>
+      </svg>
+      <div class="ring-text" style="color:#2980b9">21.5%</div>
+    </div>
+    <div class="card-done">達成 121</div>
+    <div class="card-detail" style="margin-top:4px;">
+      自訂目標 562
+    </div>
+    <div class="card-detail" style="margin-top:4px; color:#1a5276; font-weight:600;">
+      兩年三倍達成率：12.8%（目標 948）
+    </div>
+  </div>
+  <div class="card card-gohonzon">
+    <div class="card-title">御本尊</div>
+    <div class="ring-wrapper">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle class="ring-bg" cx="50" cy="50" r="45"/>
+        <circle class="ring-progress" cx="50" cy="50" r="45"
+                stroke="#27ae60"
+                stroke-dasharray="282.74"
+                stroke-dashoffset="77.7535"/>
+      </svg>
+      <div class="ring-text" style="color:#27ae60">72.5%</div>
+    </div>
+    <div class="card-done">達成 29</div>
+    <div class="card-detail" style="margin-top:4px;">
+      自訂目標 40
+    </div>
+  </div>
+  <div class="card card-mycreation">
+    <div class="card-title">My創新</div>
+    <div class="ring-wrapper">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle class="ring-bg" cx="50" cy="50" r="45"/>
+        <circle class="ring-progress" cx="50" cy="50" r="45"
+                stroke="#8e44ad"
+                stroke-dasharray="282.74"
+                stroke-dashoffset="13.260617599256989"/>
+      </svg>
+      <div class="ring-text" style="color:#8e44ad">95.3%</div>
+    </div>
+    <div class="card-done">達成 4105</div>
+    <div class="card-detail" style="margin-top:4px;">
+      自訂目標 4307
+    </div>
+  </div>
+  <div class="card card-active">
+    <div class="card-title">實動會員數</div>
+    <div class="ring-wrapper">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle class="ring-bg" cx="50" cy="50" r="45"/>
+        <circle class="ring-progress" cx="50" cy="50" r="45"
+                stroke="#d35400"
+                stroke-dasharray="282.74"
+                stroke-dashoffset="206.17547134935307"/>
+      </svg>
+      <div class="ring-text" style="color:#d35400">27.1%</div>
+    </div>
+    <div class="card-done">達成 2344</div>
+    <div class="card-detail" style="margin-top:4px;">
+      自訂目標 8656
+    </div>
+  </div>
+</div>
+
+
+<div class="mid-section">
+  
+  <div class="panel">
+    <div class="panel-title">達成率排行榜 Top 10</div>
+    <div class="tabs" id="rank-tabs">
+      <button class="tab-btn active"
+              onclick="switchRankTab('個人資料卡', this)">個人資料卡</button>
+      <button class="tab-btn "
+              onclick="switchRankTab('御本尊', this)">御本尊</button>
+      <button class="tab-btn "
+              onclick="switchRankTab('My創新', this)">My創新</button>
+      <button class="tab-btn "
+              onclick="switchRankTab('實動會員數', this)">實動會員數</button>
+    </div>
+    <ol class="rank-list" id="rank-1" style="">
+      <li class="rank-item">
+        <span class="rank-num rank-1">1</span>
+        <div class="rank-info">
+          <div class="rank-district">泰林區</div>
+          <div class="rank-area">三新圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100.0%"></div>
+          </div>
+          <span class="rank-rate">100.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-2">2</span>
+        <div class="rank-info">
+          <div class="rank-district">寶發區</div>
+          <div class="rank-area">高雄三圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100.0%"></div>
+          </div>
+          <span class="rank-rate">100.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-3">3</span>
+        <div class="rank-info">
+          <div class="rank-district">苗栗區</div>
+          <div class="rank-area">竹苗圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:62.5%"></div>
+          </div>
+          <span class="rank-rate">62.5%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">4</span>
+        <div class="rank-info">
+          <div class="rank-district">台中中區</div>
+          <div class="rank-area">台中一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:55.55555555555556%"></div>
+          </div>
+          <span class="rank-rate">55.6%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">5</span>
+        <div class="rank-info">
+          <div class="rank-district">岡山區</div>
+          <div class="rank-area">高雄一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:55.55555555555556%"></div>
+          </div>
+          <span class="rank-rate">55.6%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">6</span>
+        <div class="rank-info">
+          <div class="rank-district">市府區</div>
+          <div class="rank-area">北二圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:50.0%"></div>
+          </div>
+          <span class="rank-rate">50.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">7</span>
+        <div class="rank-info">
+          <div class="rank-district">北南一區</div>
+          <div class="rank-area">北三圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:50.0%"></div>
+          </div>
+          <span class="rank-rate">50.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">8</span>
+        <div class="rank-info">
+          <div class="rank-district">蘆洲區</div>
+          <div class="rank-area">三新圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:50.0%"></div>
+          </div>
+          <span class="rank-rate">50.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">9</span>
+        <div class="rank-info">
+          <div class="rank-district">高雄西區</div>
+          <div class="rank-area">高雄二圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:50.0%"></div>
+          </div>
+          <span class="rank-rate">50.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">10</span>
+        <div class="rank-info">
+          <div class="rank-district">屏東二區</div>
+          <div class="rank-area">屏東圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:50.0%"></div>
+          </div>
+          <span class="rank-rate">50.0%</span>
+        </div>
+      </li>
+    </ol>
+    <ol class="rank-list" id="rank-2" style="display:none">
+      <li class="rank-item">
+        <span class="rank-num rank-1">1</span>
+        <div class="rank-info">
+          <div class="rank-district">金門</div>
+          <div class="rank-area">三新圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100.0%"></div>
+          </div>
+          <span class="rank-rate">100.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-2">2</span>
+        <div class="rank-info">
+          <div class="rank-district">彰化二區</div>
+          <div class="rank-area">彰投圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:50.0%"></div>
+          </div>
+          <span class="rank-rate">50.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-3">3</span>
+        <div class="rank-info">
+          <div class="rank-district">桃園北區</div>
+          <div class="rank-area">桃園一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:28.57142857142857%"></div>
+          </div>
+          <span class="rank-rate">28.6%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">4</span>
+        <div class="rank-info">
+          <div class="rank-district">台南東區</div>
+          <div class="rank-area">台南二圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:11.11111111111111%"></div>
+          </div>
+          <span class="rank-rate">11.1%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">5</span>
+        <div class="rank-info">
+          <div class="rank-district">板橋區</div>
+          <div class="rank-area">板城圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:0%"></div>
+          </div>
+          <span class="rank-rate">0.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">6</span>
+        <div class="rank-info">
+          <div class="rank-district">嘉義一區</div>
+          <div class="rank-area">雲嘉圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:0%"></div>
+          </div>
+          <span class="rank-rate">0.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">7</span>
+        <div class="rank-info">
+          <div class="rank-district">高雄北區</div>
+          <div class="rank-area">高雄一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:0%"></div>
+          </div>
+          <span class="rank-rate">0.0%</span>
+        </div>
+      </li>
+    </ol>
+    <ol class="rank-list" id="rank-3" style="display:none">
+      <li class="rank-item">
+        <span class="rank-num rank-1">1</span>
+        <div class="rank-info">
+          <div class="rank-district">桃園西區</div>
+          <div class="rank-area">桃園二圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">118.6%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-2">2</span>
+        <div class="rank-info">
+          <div class="rank-district">澎湖</div>
+          <div class="rank-area">高雄二圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">115.4%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-3">3</span>
+        <div class="rank-info">
+          <div class="rank-district">彰化一區</div>
+          <div class="rank-area">彰投圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">111.4%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">4</span>
+        <div class="rank-info">
+          <div class="rank-district">城林區</div>
+          <div class="rank-area">板城圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">108.1%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">5</span>
+        <div class="rank-info">
+          <div class="rank-district">市府區</div>
+          <div class="rank-area">北二圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">108.0%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">6</span>
+        <div class="rank-info">
+          <div class="rank-district">台南中區</div>
+          <div class="rank-area">台南一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">107.8%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">7</span>
+        <div class="rank-info">
+          <div class="rank-district">泰林區</div>
+          <div class="rank-area">三新圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">107.3%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">8</span>
+        <div class="rank-info">
+          <div class="rank-district">鳳山區</div>
+          <div class="rank-area">高雄三圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">106.2%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">9</span>
+        <div class="rank-info">
+          <div class="rank-district">竹縣區</div>
+          <div class="rank-area">竹苗圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">105.9%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">10</span>
+        <div class="rank-info">
+          <div class="rank-district">台北中區</div>
+          <div class="rank-area">北二圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:100%"></div>
+          </div>
+          <span class="rank-rate">104.6%</span>
+        </div>
+      </li>
+    </ol>
+    <ol class="rank-list" id="rank-4" style="display:none">
+      <li class="rank-item">
+        <span class="rank-num rank-1">1</span>
+        <div class="rank-info">
+          <div class="rank-district">屏東二區</div>
+          <div class="rank-area">屏東圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:93.75%"></div>
+          </div>
+          <span class="rank-rate">93.8%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-2">2</span>
+        <div class="rank-info">
+          <div class="rank-district">台中北區</div>
+          <div class="rank-area">台中一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:92.4901185770751%"></div>
+          </div>
+          <span class="rank-rate">92.5%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-3">3</span>
+        <div class="rank-info">
+          <div class="rank-district">台北東區</div>
+          <div class="rank-area">北一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:91.33333333333333%"></div>
+          </div>
+          <span class="rank-rate">91.3%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">4</span>
+        <div class="rank-info">
+          <div class="rank-district">三重區</div>
+          <div class="rank-area">三新圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:90.9090909090909%"></div>
+          </div>
+          <span class="rank-rate">90.9%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">5</span>
+        <div class="rank-info">
+          <div class="rank-district">永和區</div>
+          <div class="rank-area">雙和圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:90.2654867256637%"></div>
+          </div>
+          <span class="rank-rate">90.3%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">6</span>
+        <div class="rank-info">
+          <div class="rank-district">岡山區</div>
+          <div class="rank-area">高雄一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:88.3495145631068%"></div>
+          </div>
+          <span class="rank-rate">88.3%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">7</span>
+        <div class="rank-info">
+          <div class="rank-district">蘆洲區</div>
+          <div class="rank-area">三新圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:84.84848484848484%"></div>
+          </div>
+          <span class="rank-rate">84.8%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">8</span>
+        <div class="rank-info">
+          <div class="rank-district">中和區</div>
+          <div class="rank-area">雙和圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:78.48837209302324%"></div>
+          </div>
+          <span class="rank-rate">78.5%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">9</span>
+        <div class="rank-info">
+          <div class="rank-district">泰林區</div>
+          <div class="rank-area">三新圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:75.45454545454545%"></div>
+          </div>
+          <span class="rank-rate">75.5%</span>
+        </div>
+      </li>
+      <li class="rank-item">
+        <span class="rank-num rank-other">10</span>
+        <div class="rank-info">
+          <div class="rank-district">台中中區</div>
+          <div class="rank-area">台中一圈</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:74.53703703703704%"></div>
+          </div>
+          <span class="rank-rate">74.5%</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  
+  <div class="panel">
+    <div class="panel-title">達成率分佈</div>
+    <div class="tabs" id="dist-tabs">
+      <button class="tab-btn active"
+              onclick="switchDistTab('個人資料卡', this)">個人資料卡</button>
+      <button class="tab-btn "
+              onclick="switchDistTab('御本尊', this)">御本尊</button>
+      <button class="tab-btn "
+              onclick="switchDistTab('My創新', this)">My創新</button>
+      <button class="tab-btn "
+              onclick="switchDistTab('實動會員數', this)">實動會員數</button>
+    </div>
+    <div class="dist-content" id="dist-1" style="">
+      <div class="dist-row">
+        <span class="dist-label">≥ 100%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-100" style="width:3.3%">2區</div></div>
+        <span class="dist-count">2</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">80% ~ 99%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-80" style="width:0.0%">0區</div></div>
+        <span class="dist-count">0</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">50% ~ 79%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-50" style="width:13.1%">8區</div></div>
+        <span class="dist-count">8</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">30% ~ 49%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-30" style="width:11.5%">7區</div></div>
+        <span class="dist-count">7</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">< 30%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-0" style="width:72.1%">44區</div></div>
+        <span class="dist-count">44</span>
+      </div>
+    </div>
+    <div class="dist-content" id="dist-2" style="display:none">
+      <div class="dist-row">
+        <span class="dist-label">≥ 100%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-100" style="width:1.6%">1區</div></div>
+        <span class="dist-count">1</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">80% ~ 99%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-80" style="width:0.0%">0區</div></div>
+        <span class="dist-count">0</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">50% ~ 79%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-50" style="width:1.6%">1區</div></div>
+        <span class="dist-count">1</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">30% ~ 49%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-30" style="width:0.0%">0區</div></div>
+        <span class="dist-count">0</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">< 30%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-0" style="width:96.7%">59區</div></div>
+        <span class="dist-count">59</span>
+      </div>
+    </div>
+    <div class="dist-content" id="dist-3" style="display:none">
+      <div class="dist-row">
+        <span class="dist-label">≥ 100%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-100" style="width:31.1%">19區</div></div>
+        <span class="dist-count">19</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">80% ~ 99%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-80" style="width:50.8%">31區</div></div>
+        <span class="dist-count">31</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">50% ~ 79%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-50" style="width:14.8%">9區</div></div>
+        <span class="dist-count">9</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">30% ~ 49%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-30" style="width:1.6%">1區</div></div>
+        <span class="dist-count">1</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">< 30%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-0" style="width:1.6%">1區</div></div>
+        <span class="dist-count">1</span>
+      </div>
+    </div>
+    <div class="dist-content" id="dist-4" style="display:none">
+      <div class="dist-row">
+        <span class="dist-label">≥ 100%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-100" style="width:0.0%">0區</div></div>
+        <span class="dist-count">0</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">80% ~ 99%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-80" style="width:11.5%">7區</div></div>
+        <span class="dist-count">7</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">50% ~ 79%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-50" style="width:13.1%">8區</div></div>
+        <span class="dist-count">8</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">30% ~ 49%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-30" style="width:11.5%">7區</div></div>
+        <span class="dist-count">7</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">< 30%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-0" style="width:63.9%">39區</div></div>
+        <span class="dist-count">39</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="toolbar">
+  <button class="btn btn-pdf" onclick="downloadPDF()">&#128196; 下載 PDF</button>
+  <button class="btn btn-csv" onclick="downloadCSV()">&#128202; 下載 CSV</button>
+</div>
+
+<div class="search-bar">
+  <input type="text" class="search-input" id="searchInput"
+         placeholder="搜尋區域或地區名稱…" oninput="filterTable()">
+  <span class="search-hint">多個關鍵字用空格分隔（例：花蓮 台東 蘭陽）</span>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-color" style="background:#d4edda"></span>達成率 ≥ 100%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#d1ecf1"></span>達成率 ≥ 80%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#dee2f1"></span>達成率 ≥ 50%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#e8e5ef"></span>達成率 ≥ 30%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#eaf2f8;border:2px solid #2980b9"></span>兩年三倍（今年新增）</div>
+</div>
+
+
+<div class="table-wrapper">
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th rowspan="2" style="min-width:80px">區域</th>
+        <th rowspan="2" style="min-width:90px">地區</th>
+        <th colspan="4" class="cat-personal">個人資料卡（新入會）</th>
+        <th colspan="2" class="cat-twoyear">兩年三倍</th>
+        <th colspan="4" class="cat-gohonzon">御本尊</th>
+        <th colspan="4" class="cat-mycreation">My創新</th>
+        <th colspan="4" class="cat-active">實動會員數</th>
+      </tr>
+      <tr>
+        
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="4" onclick="sortTable(4,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="5" onclick="sortTable(5,'pct',this)">2026達成率 <span class="sort-arrow">⇅</span></th>
+        
+        <th class="cat-divider">目標</th>
+        <th class="sortable" data-col="7" onclick="sortTable(7,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+        
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="10" onclick="sortTable(10,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="11" onclick="sortTable(11,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+        
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="14" onclick="sortTable(14,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="15" onclick="sortTable(15,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+        
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="18" onclick="sortTable(18,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="19" onclick="sortTable(19,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class=""
+          data-area="蘭陽圈" data-district="蘭陽北區"
+          >
+        <td class="text-left">蘭陽圈</td>
+        <td class="text-left">蘭陽北區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>8</td>
+        <td class="cell-done">3</td>
+        <td class="rate-30">37.5%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">18.8%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">70</td>
+        <td>48</td>
+        <td class="cell-done">42</td>
+        <td class="rate-80">87.5%</td>
+
+        
+        <td class="cat-divider">108</td>
+        <td>108</td>
+        <td class="cell-done">71</td>
+        <td class="rate-50">65.7%</td>
+      </tr>
+      <tr class=""
+          data-area="蘭陽圈" data-district="蘭陽南區"
+          >
+        <td class="text-left">蘭陽圈</td>
+        <td class="text-left">蘭陽南區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>6</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">69</td>
+        <td>49</td>
+        <td class="cell-done">37</td>
+        <td class="rate-50">75.5%</td>
+
+        
+        <td class="cat-divider">80</td>
+        <td>82</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="花東圈" data-district="花蓮區"
+          >
+        <td class="text-left">花東圈</td>
+        <td class="text-left">花蓮區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">3</td>
+        <td class="rate-30">33.3%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">16.7%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">67</td>
+        <td>92</td>
+        <td class="cell-done">57</td>
+        <td class="rate-50">62.0%</td>
+
+        
+        <td class="cat-divider">131</td>
+        <td>138</td>
+        <td class="cell-done">20</td>
+        <td class="">14.5%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="花東圈" data-district="台東區"
+          >
+        <td class="text-left">花東圈</td>
+        <td class="text-left">台東區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>6</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">86</td>
+        <td>34</td>
+        <td class="cell-done">26</td>
+        <td class="rate-50">76.5%</td>
+
+        
+        <td class="cat-divider">73</td>
+        <td>73</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="基隆圈" data-district="基隆北區"
+          >
+        <td class="text-left">基隆圈</td>
+        <td class="text-left">基隆北區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>15</td>
+        <td class="cell-done">1</td>
+        <td class="">6.7%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">6.2%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">72</td>
+        <td>91</td>
+        <td class="cell-done">75</td>
+        <td class="rate-80">82.4%</td>
+
+        
+        <td class="cat-divider">236</td>
+        <td>240</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="基隆圈" data-district="基隆東區"
+          >
+        <td class="text-left">基隆圈</td>
+        <td class="text-left">基隆東區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">1</td>
+        <td class="">11.1%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">2</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">70</td>
+        <td>71</td>
+        <td class="cell-done">73</td>
+        <td class="rate-100">102.8%</td>
+
+        
+        <td class="cat-divider">114</td>
+        <td>97</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="基隆圈" data-district="馬祖"
+          >
+        <td class="text-left">基隆圈</td>
+        <td class="text-left">馬祖</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>2</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">0</td>
+        <td class="cell-twoyear ">-</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">44</td>
+        <td>3</td>
+        <td class="cell-done">1</td>
+        <td class="rate-30">33.3%</td>
+
+        
+        <td class="cat-divider">4</td>
+        <td>3</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="淡北圈" data-district="淡水區"
+          >
+        <td class="text-left">淡北圈</td>
+        <td class="text-left">淡水區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>9</td>
+        <td class="cell-done">3</td>
+        <td class="rate-30">33.3%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">25.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">86</td>
+        <td>49</td>
+        <td class="cell-done">50</td>
+        <td class="rate-100">102.0%</td>
+
+        
+        <td class="cat-divider">113</td>
+        <td>104</td>
+        <td class="cell-done">75</td>
+        <td class="rate-50">72.1%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="淡北圈" data-district="北投區"
+          >
+        <td class="text-left">淡北圈</td>
+        <td class="text-left">北投區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>7</td>
+        <td class="cell-done">1</td>
+        <td class="">14.3%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">64</td>
+        <td>76</td>
+        <td class="cell-done">44</td>
+        <td class="rate-50">57.9%</td>
+
+        
+        <td class="cat-divider">119</td>
+        <td>142</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="淡北圈" data-district="士林區"
+          >
+        <td class="text-left">淡北圈</td>
+        <td class="text-left">士林區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>6</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">79</td>
+        <td>55</td>
+        <td class="cell-done">47</td>
+        <td class="rate-80">85.5%</td>
+
+        
+        <td class="cat-divider">112</td>
+        <td>112</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="北一圈" data-district="汐止區"
+          >
+        <td class="text-left">北一圈</td>
+        <td class="text-left">汐止區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>10</td>
+        <td class="cell-done">3</td>
+        <td class="rate-30">30.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">18.8%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">68</td>
+        <td>61</td>
+        <td class="cell-done">59</td>
+        <td class="rate-80">96.7%</td>
+
+        
+        <td class="cat-divider">116</td>
+        <td>108</td>
+        <td class="cell-done">76</td>
+        <td class="rate-50">70.4%</td>
+      </tr>
+      <tr class=""
+          data-area="北一圈" data-district="內湖區"
+          >
+        <td class="text-left">北一圈</td>
+        <td class="text-left">內湖區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>6</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">51</td>
+        <td>59</td>
+        <td class="cell-done">50</td>
+        <td class="rate-80">84.7%</td>
+
+        
+        <td class="cat-divider">130</td>
+        <td>127</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="北一圈" data-district="台北東區"
+          >
+        <td class="text-left">北一圈</td>
+        <td class="text-left">台北東區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>7</td>
+        <td class="cell-done">2</td>
+        <td class="">28.6%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">12.5%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">73</td>
+        <td>77</td>
+        <td class="cell-done">56</td>
+        <td class="rate-50">72.7%</td>
+
+        
+        <td class="cat-divider">154</td>
+        <td>150</td>
+        <td class="cell-done">137</td>
+        <td class="rate-80">91.3%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="北二圈" data-district="市府區"
+          >
+        <td class="text-left">北二圈</td>
+        <td class="text-left">市府區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>10</td>
+        <td class="cell-done">5</td>
+        <td class="rate-50">50.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">27.8%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">63</td>
+        <td>87</td>
+        <td class="cell-done">94</td>
+        <td class="rate-100">108.0%</td>
+
+        
+        <td class="cat-divider">154</td>
+        <td>139</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="北二圈" data-district="台北中區"
+          >
+        <td class="text-left">北二圈</td>
+        <td class="text-left">台北中區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>10</td>
+        <td class="cell-done">3</td>
+        <td class="rate-30">30.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">16.7%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">66</td>
+        <td>65</td>
+        <td class="cell-done">68</td>
+        <td class="rate-100">104.6%</td>
+
+        
+        <td class="cat-divider">144</td>
+        <td>140</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="北二圈" data-district="台北西區"
+          >
+        <td class="text-left">北二圈</td>
+        <td class="text-left">台北西區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>10</td>
+        <td class="cell-done">2</td>
+        <td class="">20.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">12.5%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">33</td>
+        <td>91</td>
+        <td class="cell-done">81</td>
+        <td class="rate-80">89.0%</td>
+
+        
+        <td class="cat-divider">150</td>
+        <td>144</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="北三圈" data-district="北南一區"
+          >
+        <td class="text-left">北三圈</td>
+        <td class="text-left">北南一區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>8</td>
+        <td class="cell-done">4</td>
+        <td class="rate-50">50.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear rate-30">33.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">79</td>
+        <td>56</td>
+        <td class="cell-done">57</td>
+        <td class="rate-100">101.8%</td>
+
+        
+        <td class="cat-divider">97</td>
+        <td>88</td>
+        <td class="cell-done">16</td>
+        <td class="">18.2%</td>
+      </tr>
+      <tr class=""
+          data-area="北三圈" data-district="北南二區"
+          >
+        <td class="text-left">北三圈</td>
+        <td class="text-left">北南二區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>10</td>
+        <td class="cell-done">2</td>
+        <td class="">20.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">12.5%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">56</td>
+        <td>48</td>
+        <td class="cell-done">41</td>
+        <td class="rate-80">85.4%</td>
+
+        
+        <td class="cat-divider">102</td>
+        <td>91</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="雙和圈" data-district="永和區"
+          >
+        <td class="text-left">雙和圈</td>
+        <td class="text-left">永和區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>8</td>
+        <td class="cell-done">2</td>
+        <td class="">25.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">16.7%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">94</td>
+        <td>57</td>
+        <td class="cell-done">57</td>
+        <td class="rate-100">100.0%</td>
+
+        
+        <td class="cat-divider">113</td>
+        <td>113</td>
+        <td class="cell-done">102</td>
+        <td class="rate-80">90.3%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="雙和圈" data-district="中和區"
+          >
+        <td class="text-left">雙和圈</td>
+        <td class="text-left">中和區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">76</td>
+        <td>73</td>
+        <td class="cell-done">75</td>
+        <td class="rate-100">102.7%</td>
+
+        
+        <td class="cat-divider">188</td>
+        <td>172</td>
+        <td class="cell-done">135</td>
+        <td class="rate-50">78.5%</td>
+      </tr>
+      <tr class=""
+          data-area="板城圈" data-district="板橋區"
+          >
+        <td class="text-left">板城圈</td>
+        <td class="text-left">板橋區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>10</td>
+        <td class="cell-done">1</td>
+        <td class="">10.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>7</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider">111</td>
+        <td>141</td>
+        <td class="cell-done">118</td>
+        <td class="rate-80">83.7%</td>
+
+        
+        <td class="cat-divider">189</td>
+        <td>189</td>
+        <td class="cell-done">25</td>
+        <td class="">13.2%</td>
+      </tr>
+      <tr class=""
+          data-area="板城圈" data-district="城林區"
+          >
+        <td class="text-left">板城圈</td>
+        <td class="text-left">城林區</td>
+
+        
+        <td class="cat-divider">11</td>
+        <td>12</td>
+        <td class="cell-done">2</td>
+        <td class="">16.7%</td>
+
+        
+        <td class="cat-divider cell-twoyear">22</td>
+        <td class="cell-twoyear ">9.1%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">100</td>
+        <td>136</td>
+        <td class="cell-done">147</td>
+        <td class="rate-100">108.1%</td>
+
+        
+        <td class="cat-divider">279</td>
+        <td>278</td>
+        <td class="cell-done">179</td>
+        <td class="rate-50">64.4%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="三新圈" data-district="泰林區"
+          >
+        <td class="text-left">三新圈</td>
+        <td class="text-left">泰林區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>12</td>
+        <td class="cell-done">12</td>
+        <td class="rate-100">100.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear rate-100">100.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">2</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">82</td>
+        <td>55</td>
+        <td class="cell-done">59</td>
+        <td class="rate-100">107.3%</td>
+
+        
+        <td class="cat-divider">113</td>
+        <td>110</td>
+        <td class="cell-done">83</td>
+        <td class="rate-50">75.5%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="三新圈" data-district="蘆洲區"
+          >
+        <td class="text-left">三新圈</td>
+        <td class="text-left">蘆洲區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>6</td>
+        <td class="cell-done">3</td>
+        <td class="rate-50">50.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">25.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">74</td>
+        <td>48</td>
+        <td class="cell-done">50</td>
+        <td class="rate-100">104.2%</td>
+
+        
+        <td class="cat-divider">73</td>
+        <td>66</td>
+        <td class="cell-done">56</td>
+        <td class="rate-80">84.8%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="三新圈" data-district="三重區"
+          >
+        <td class="text-left">三新圈</td>
+        <td class="text-left">三重區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>11</td>
+        <td class="cell-done">1</td>
+        <td class="">9.1%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">17</td>
+        <td>86</td>
+        <td class="cell-done">85</td>
+        <td class="rate-80">98.8%</td>
+
+        
+        <td class="cat-divider">157</td>
+        <td>154</td>
+        <td class="cell-done">140</td>
+        <td class="rate-80">90.9%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="三新圈" data-district="新莊區"
+          >
+        <td class="text-left">三新圈</td>
+        <td class="text-left">新莊區</td>
+
+        
+        <td class="cat-divider">11</td>
+        <td>14</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">22</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">2</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">57</td>
+        <td>103</td>
+        <td class="cell-done">96</td>
+        <td class="rate-80">93.2%</td>
+
+        
+        <td class="cat-divider">163</td>
+        <td>156</td>
+        <td class="cell-done">48</td>
+        <td class="rate-30">30.8%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="三新圈" data-district="金門"
+          >
+        <td class="text-left">三新圈</td>
+        <td class="text-left">金門</td>
+
+        
+        <td class="cat-divider">2</td>
+        <td>2</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">4</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>1</td>
+        <td class="cell-done">1</td>
+        <td class="rate-100">100.0%</td>
+
+        
+        <td class="cat-divider">64</td>
+        <td>63</td>
+        <td class="cell-done">5</td>
+        <td class="">7.9%</td>
+
+        
+        <td class="cat-divider">14</td>
+        <td>15</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="桃園一圈" data-district="桃園北區"
+          >
+        <td class="text-left">桃園一圈</td>
+        <td class="text-left">桃園北區</td>
+
+        
+        <td class="cat-divider">12</td>
+        <td>16</td>
+        <td class="cell-done">4</td>
+        <td class="">25.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">24</td>
+        <td class="cell-twoyear ">16.7%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>7</td>
+        <td class="cell-done">2</td>
+        <td class="">28.6%</td>
+
+        
+        <td class="cat-divider">56</td>
+        <td>95</td>
+        <td class="cell-done">93</td>
+        <td class="rate-80">97.9%</td>
+
+        
+        <td class="cat-divider">229</td>
+        <td>226</td>
+        <td class="cell-done">48</td>
+        <td class="">21.2%</td>
+      </tr>
+      <tr class=""
+          data-area="桃園一圈" data-district="桃園東區"
+          >
+        <td class="text-left">桃園一圈</td>
+        <td class="text-left">桃園東區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>8</td>
+        <td class="cell-done">2</td>
+        <td class="">25.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">11.1%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">53</td>
+        <td>115</td>
+        <td class="cell-done">114</td>
+        <td class="rate-80">99.1%</td>
+
+        
+        <td class="cat-divider">232</td>
+        <td>215</td>
+        <td class="cell-done">33</td>
+        <td class="">15.3%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="桃園二圈" data-district="桃園中區"
+          >
+        <td class="text-left">桃園二圈</td>
+        <td class="text-left">桃園中區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">4</td>
+        <td class="rate-30">44.4%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">22.2%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">15</td>
+        <td>89</td>
+        <td class="cell-done">87</td>
+        <td class="rate-80">97.8%</td>
+
+        
+        <td class="cat-divider">218</td>
+        <td>224</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="桃園二圈" data-district="桃園西區"
+          >
+        <td class="text-left">桃園二圈</td>
+        <td class="text-left">桃園西區</td>
+
+        
+        <td class="cat-divider">12</td>
+        <td>17</td>
+        <td class="cell-done">1</td>
+        <td class="">5.9%</td>
+
+        
+        <td class="cat-divider cell-twoyear">24</td>
+        <td class="cell-twoyear ">4.2%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">68</td>
+        <td>70</td>
+        <td class="cell-done">83</td>
+        <td class="rate-100">118.6%</td>
+
+        
+        <td class="cat-divider">187</td>
+        <td>185</td>
+        <td class="cell-done">37</td>
+        <td class="">20.0%</td>
+      </tr>
+      <tr class=""
+          data-area="竹苗圈" data-district="竹縣區"
+          >
+        <td class="text-left">竹苗圈</td>
+        <td class="text-left">竹縣區</td>
+
+        
+        <td class="cat-divider">12</td>
+        <td>12</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">24</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">67</td>
+        <td>68</td>
+        <td class="cell-done">72</td>
+        <td class="rate-100">105.9%</td>
+
+        
+        <td class="cat-divider">216</td>
+        <td>216</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="竹苗圈" data-district="新竹區"
+          >
+        <td class="text-left">竹苗圈</td>
+        <td class="text-left">新竹區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>12</td>
+        <td class="cell-done">1</td>
+        <td class="">8.3%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">19</td>
+        <td>74</td>
+        <td class="cell-done">77</td>
+        <td class="rate-100">104.1%</td>
+
+        
+        <td class="cat-divider">229</td>
+        <td>217</td>
+        <td class="cell-done">35</td>
+        <td class="">16.1%</td>
+      </tr>
+      <tr class=""
+          data-area="竹苗圈" data-district="苗栗區"
+          >
+        <td class="text-left">竹苗圈</td>
+        <td class="text-left">苗栗區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>8</td>
+        <td class="cell-done">5</td>
+        <td class="rate-50">62.5%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear rate-30">31.2%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">52</td>
+        <td>52</td>
+        <td class="cell-done">49</td>
+        <td class="rate-80">94.2%</td>
+
+        
+        <td class="cat-divider">180</td>
+        <td>180</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="台中一圈" data-district="台中北區"
+          >
+        <td class="text-left">台中一圈</td>
+        <td class="text-left">台中北區</td>
+
+        
+        <td class="cat-divider">11</td>
+        <td>14</td>
+        <td class="cell-done">4</td>
+        <td class="">28.6%</td>
+
+        
+        <td class="cat-divider cell-twoyear">22</td>
+        <td class="cell-twoyear ">18.2%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">2</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">56</td>
+        <td>115</td>
+        <td class="cell-done">103</td>
+        <td class="rate-80">89.6%</td>
+
+        
+        <td class="cat-divider">188</td>
+        <td>253</td>
+        <td class="cell-done">234</td>
+        <td class="rate-80">92.5%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="台中一圈" data-district="台中中區"
+          >
+        <td class="text-left">台中一圈</td>
+        <td class="text-left">台中中區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">5</td>
+        <td class="rate-50">55.6%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">27.8%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">62</td>
+        <td>148</td>
+        <td class="cell-done">145</td>
+        <td class="rate-80">98.0%</td>
+
+        
+        <td class="cat-divider">256</td>
+        <td>216</td>
+        <td class="cell-done">161</td>
+        <td class="rate-50">74.5%</td>
+      </tr>
+      <tr class=""
+          data-area="台中二圈" data-district="台中西區"
+          >
+        <td class="text-left">台中二圈</td>
+        <td class="text-left">台中西區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>4</td>
+        <td class="cell-done">1</td>
+        <td class="">25.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">46</td>
+        <td>81</td>
+        <td class="cell-done">70</td>
+        <td class="rate-80">86.4%</td>
+
+        
+        <td class="cat-divider">213</td>
+        <td>181</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="台中二圈" data-district="台中南區"
+          >
+        <td class="text-left">台中二圈</td>
+        <td class="text-left">台中南區</td>
+
+        
+        <td class="cat-divider">11</td>
+        <td>10</td>
+        <td class="cell-done">1</td>
+        <td class="">10.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">22</td>
+        <td class="cell-twoyear ">4.5%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">63</td>
+        <td>105</td>
+        <td class="cell-done">99</td>
+        <td class="rate-80">94.3%</td>
+
+        
+        <td class="cat-divider">337</td>
+        <td>325</td>
+        <td class="cell-done">38</td>
+        <td class="">11.7%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="彰投圈" data-district="南投區"
+          >
+        <td class="text-left">彰投圈</td>
+        <td class="text-left">南投區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>11</td>
+        <td class="cell-done">1</td>
+        <td class="">9.1%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">6.2%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">60</td>
+        <td>71</td>
+        <td class="cell-done">70</td>
+        <td class="rate-80">98.6%</td>
+
+        
+        <td class="cat-divider">159</td>
+        <td>154</td>
+        <td class="cell-done">55</td>
+        <td class="rate-30">35.7%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="彰投圈" data-district="彰化一區"
+          >
+        <td class="text-left">彰投圈</td>
+        <td class="text-left">彰化一區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>15</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">55</td>
+        <td>70</td>
+        <td class="cell-done">78</td>
+        <td class="rate-100">111.4%</td>
+
+        
+        <td class="cat-divider">221</td>
+        <td>210</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="彰投圈" data-district="彰化二區"
+          >
+        <td class="text-left">彰投圈</td>
+        <td class="text-left">彰化二區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>8</td>
+        <td class="cell-done">1</td>
+        <td class="">12.5%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>2</td>
+        <td class="cell-done">1</td>
+        <td class="rate-50">50.0%</td>
+
+        
+        <td class="cat-divider">73</td>
+        <td>74</td>
+        <td class="cell-done">77</td>
+        <td class="rate-100">104.1%</td>
+
+        
+        <td class="cat-divider">163</td>
+        <td>163</td>
+        <td class="cell-done">63</td>
+        <td class="rate-30">38.7%</td>
+      </tr>
+      <tr class=""
+          data-area="雲嘉圈" data-district="雲林一區"
+          >
+        <td class="text-left">雲嘉圈</td>
+        <td class="text-left">雲林一區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">1</td>
+        <td class="">11.1%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">3</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">43</td>
+        <td>68</td>
+        <td class="cell-done">66</td>
+        <td class="rate-80">97.1%</td>
+
+        
+        <td class="cat-divider">115</td>
+        <td>110</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="雲嘉圈" data-district="雲林二區"
+          >
+        <td class="text-left">雲嘉圈</td>
+        <td class="text-left">雲林二區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>10</td>
+        <td class="cell-done">3</td>
+        <td class="rate-30">30.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">25.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">45</td>
+        <td>40</td>
+        <td class="cell-done">28</td>
+        <td class="rate-50">70.0%</td>
+
+        
+        <td class="cat-divider">141</td>
+        <td>134</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="雲嘉圈" data-district="嘉義一區"
+          >
+        <td class="text-left">雲嘉圈</td>
+        <td class="text-left">嘉義一區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>9</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>3</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider">59</td>
+        <td>44</td>
+        <td class="cell-done">28</td>
+        <td class="rate-50">63.6%</td>
+
+        
+        <td class="cat-divider">75</td>
+        <td>75</td>
+        <td class="cell-done">19</td>
+        <td class="">25.3%</td>
+      </tr>
+      <tr class=""
+          data-area="雲嘉圈" data-district="嘉義二區"
+          >
+        <td class="text-left">雲嘉圈</td>
+        <td class="text-left">嘉義二區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>10</td>
+        <td class="cell-done">1</td>
+        <td class="">10.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">40</td>
+        <td>37</td>
+        <td class="cell-done">21</td>
+        <td class="rate-50">56.8%</td>
+
+        
+        <td class="cat-divider">73</td>
+        <td>73</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="台南一圈" data-district="台南北區"
+          >
+        <td class="text-left">台南一圈</td>
+        <td class="text-left">台南北區</td>
+
+        
+        <td class="cat-divider">8</td>
+        <td>8</td>
+        <td class="cell-done">1</td>
+        <td class="">12.5%</td>
+
+        
+        <td class="cat-divider cell-twoyear">16</td>
+        <td class="cell-twoyear ">6.2%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">64</td>
+        <td>50</td>
+        <td class="cell-done">44</td>
+        <td class="rate-80">88.0%</td>
+
+        
+        <td class="cat-divider">90</td>
+        <td>88</td>
+        <td class="cell-done">40</td>
+        <td class="rate-30">45.5%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="台南一圈" data-district="台南中區"
+          >
+        <td class="text-left">台南一圈</td>
+        <td class="text-left">台南中區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>10</td>
+        <td class="cell-done">1</td>
+        <td class="">10.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">64</td>
+        <td>51</td>
+        <td class="cell-done">55</td>
+        <td class="rate-100">107.8%</td>
+
+        
+        <td class="cat-divider">116</td>
+        <td>108</td>
+        <td class="cell-done">44</td>
+        <td class="rate-30">40.7%</td>
+      </tr>
+      <tr class=""
+          data-area="台南二圈" data-district="台南南區"
+          >
+        <td class="text-left">台南二圈</td>
+        <td class="text-left">台南南區</td>
+
+        
+        <td class="cat-divider">12</td>
+        <td>12</td>
+        <td class="cell-done">2</td>
+        <td class="">16.7%</td>
+
+        
+        <td class="cat-divider cell-twoyear">24</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">44</td>
+        <td>85</td>
+        <td class="cell-done">75</td>
+        <td class="rate-80">88.2%</td>
+
+        
+        <td class="cat-divider">162</td>
+        <td>145</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="台南二圈" data-district="台南東區"
+          >
+        <td class="text-left">台南二圈</td>
+        <td class="text-left">台南東區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>12</td>
+        <td class="cell-done">2</td>
+        <td class="">16.7%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">11.1%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>18</td>
+        <td class="cell-done">2</td>
+        <td class="">11.1%</td>
+
+        
+        <td class="cat-divider">74</td>
+        <td>74</td>
+        <td class="cell-done">72</td>
+        <td class="rate-80">97.3%</td>
+
+        
+        <td class="cat-divider">156</td>
+        <td>157</td>
+        <td class="cell-done">36</td>
+        <td class="">22.9%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="高雄一圈" data-district="岡山區"
+          >
+        <td class="text-left">高雄一圈</td>
+        <td class="text-left">岡山區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">5</td>
+        <td class="rate-50">55.6%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">27.8%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">68</td>
+        <td>57</td>
+        <td class="cell-done">56</td>
+        <td class="rate-80">98.2%</td>
+
+        
+        <td class="cat-divider">113</td>
+        <td>103</td>
+        <td class="cell-done">91</td>
+        <td class="rate-80">88.3%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="高雄一圈" data-district="高雄北區"
+          >
+        <td class="text-left">高雄一圈</td>
+        <td class="text-left">高雄北區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>9</td>
+        <td class="cell-done">1</td>
+        <td class="">11.1%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>2</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider">50</td>
+        <td>67</td>
+        <td class="cell-done">60</td>
+        <td class="rate-80">89.6%</td>
+
+        
+        <td class="cat-divider">128</td>
+        <td>114</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="高雄一圈" data-district="高雄中區"
+          >
+        <td class="text-left">高雄一圈</td>
+        <td class="text-left">高雄中區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>12</td>
+        <td class="cell-done">1</td>
+        <td class="">8.3%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">44</td>
+        <td>99</td>
+        <td class="cell-done">77</td>
+        <td class="rate-50">77.8%</td>
+
+        
+        <td class="cat-divider">169</td>
+        <td>167</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="高雄二圈" data-district="高雄西區"
+          >
+        <td class="text-left">高雄二圈</td>
+        <td class="text-left">高雄西區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>6</td>
+        <td class="cell-done">3</td>
+        <td class="rate-50">50.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">25.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">45</td>
+        <td>76</td>
+        <td class="cell-done">71</td>
+        <td class="rate-80">93.4%</td>
+
+        
+        <td class="cat-divider">215</td>
+        <td>216</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="高雄二圈" data-district="高雄南區"
+          >
+        <td class="text-left">高雄二圈</td>
+        <td class="text-left">高雄南區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>10</td>
+        <td class="cell-done">1</td>
+        <td class="">10.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">52</td>
+        <td>83</td>
+        <td class="cell-done">75</td>
+        <td class="rate-80">90.4%</td>
+
+        
+        <td class="cat-divider">175</td>
+        <td>171</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="高雄二圈" data-district="高港區"
+          >
+        <td class="text-left">高雄二圈</td>
+        <td class="text-left">高港區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>10</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">69</td>
+        <td>72</td>
+        <td class="cell-done">62</td>
+        <td class="rate-80">86.1%</td>
+
+        
+        <td class="cat-divider">143</td>
+        <td>141</td>
+        <td class="cell-done">69</td>
+        <td class="rate-30">48.9%</td>
+      </tr>
+      <tr class=""
+          data-area="高雄二圈" data-district="澎湖"
+          >
+        <td class="text-left">高雄二圈</td>
+        <td class="text-left">澎湖</td>
+
+        
+        <td class="cat-divider">3</td>
+        <td>2</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">6</td>
+        <td class="cell-twoyear ">0.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">52</td>
+        <td>13</td>
+        <td class="cell-done">15</td>
+        <td class="rate-100">115.4%</td>
+
+        
+        <td class="cat-divider">35</td>
+        <td>35</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="高雄三圈" data-district="高雄東區"
+          >
+        <td class="text-left">高雄三圈</td>
+        <td class="text-left">高雄東區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>12</td>
+        <td class="cell-done">3</td>
+        <td class="">25.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">16.7%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">52</td>
+        <td>69</td>
+        <td class="cell-done">72</td>
+        <td class="rate-100">104.3%</td>
+
+        
+        <td class="cat-divider">198</td>
+        <td>190</td>
+        <td class="cell-done">29</td>
+        <td class="">15.3%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="高雄三圈" data-district="鳳山區"
+          >
+        <td class="text-left">高雄三圈</td>
+        <td class="text-left">鳳山區</td>
+
+        
+        <td class="cat-divider">9</td>
+        <td>9</td>
+        <td class="cell-done">1</td>
+        <td class="">11.1%</td>
+
+        
+        <td class="cat-divider cell-twoyear">18</td>
+        <td class="cell-twoyear ">5.6%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">53</td>
+        <td>65</td>
+        <td class="cell-done">69</td>
+        <td class="rate-100">106.2%</td>
+
+        
+        <td class="cat-divider">138</td>
+        <td>135</td>
+        <td class="cell-done">49</td>
+        <td class="rate-30">36.3%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="高雄三圈" data-district="寶發區"
+          >
+        <td class="text-left">高雄三圈</td>
+        <td class="text-left">寶發區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>7</td>
+        <td class="cell-done">7</td>
+        <td class="rate-100">100.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear rate-50">58.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">1</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">49</td>
+        <td>70</td>
+        <td class="cell-done">69</td>
+        <td class="rate-80">98.6%</td>
+
+        
+        <td class="cat-divider">100</td>
+        <td>94</td>
+        <td class="cell-done">70</td>
+        <td class="rate-50">74.5%</td>
+      </tr>
+      <tr class=""
+          data-area="屏東圈" data-district="屏東一區"
+          >
+        <td class="text-left">屏東圈</td>
+        <td class="text-left">屏東一區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>5</td>
+        <td class="cell-done">1</td>
+        <td class="">20.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">8.3%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">33</td>
+        <td>50</td>
+        <td class="cell-done">40</td>
+        <td class="rate-80">80.0%</td>
+
+        
+        <td class="cat-divider">69</td>
+        <td>64</td>
+        <td class="cell-done">0</td>
+        <td class="">0.0%</td>
+      </tr>
+      <tr class=""
+          data-area="屏東圈" data-district="屏東二區"
+          >
+        <td class="text-left">屏東圈</td>
+        <td class="text-left">屏東二區</td>
+
+        
+        <td class="cat-divider">6</td>
+        <td>6</td>
+        <td class="cell-done">3</td>
+        <td class="rate-50">50.0%</td>
+
+        
+        <td class="cat-divider cell-twoyear">12</td>
+        <td class="cell-twoyear ">25.0%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">39</td>
+        <td>36</td>
+        <td class="cell-done">29</td>
+        <td class="rate-80">80.6%</td>
+
+        
+        <td class="cat-divider">34</td>
+        <td>32</td>
+        <td class="cell-done">30</td>
+        <td class="rate-80">93.8%</td>
+      </tr>
+      <tr class="group-odd"
+          data-area="圈以上" data-district=""
+          >
+        <td class="text-left">圈以上</td>
+        <td class="text-left"></td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider cell-twoyear">0</td>
+        <td class="cell-twoyear ">-</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">154</td>
+        <td class="">-</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>0</td>
+        <td class="cell-done">0</td>
+        <td class="">-</td>
+      </tr>
+      <tr class="total-row"
+          data-area="總計" data-district=""
+          data-is-total="1">
+        <td class="text-left">總計</td>
+        <td class="text-left"></td>
+
+        
+        <td class="cat-divider">474</td>
+        <td>562</td>
+        <td class="cell-done">121</td>
+        <td class="">21.5%</td>
+
+        
+        <td class="cat-divider cell-twoyear">948</td>
+        <td class="cell-twoyear ">12.8%</td>
+
+        
+        <td class="cat-divider">0</td>
+        <td>40</td>
+        <td class="cell-done">29</td>
+        <td class="rate-50">72.5%</td>
+
+        
+        <td class="cat-divider">3655</td>
+        <td>4307</td>
+        <td class="cell-done">4105</td>
+        <td class="rate-80">95.3%</td>
+
+        
+        <td class="cat-divider">8899</td>
+        <td>8656</td>
+        <td class="cell-done">2344</td>
+        <td class="">27.1%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  本報表由程式自動產生 ｜ 資料來源：年度目標報表系統
+</footer>
+
+</div><!-- .container -->
+
+<script>
+// ===== 排行榜分頁切換 =====
+function switchRankTab(catName, btn) {
+  document.querySelectorAll('#rank-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const lists = btn.parentElement.parentElement.querySelectorAll('.rank-list');
+  lists.forEach(l => l.style.display = 'none');
+  const idx = Array.from(btn.parentElement.children).indexOf(btn);
+  lists[idx].style.display = '';
+}
+
+// ===== 分佈分頁切換 =====
+function switchDistTab(catName, btn) {
+  document.querySelectorAll('#dist-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const contents = btn.parentElement.parentElement.querySelectorAll('.dist-content');
+  contents.forEach(c => c.style.display = 'none');
+  const idx = Array.from(btn.parentElement.children).indexOf(btn);
+  contents[idx].style.display = '';
+}
+
+// ===== 搜尋篩選（空格分隔 = OR） =====
+function filterTable() {
+  const input = document.getElementById('searchInput').value.trim().toLowerCase();
+  const keywords = input.split(/\s+/).filter(k => k.length > 0);
+  const rows = document.querySelectorAll('#dataTable tbody tr');
+  rows.forEach(row => {
+    if (row.dataset.isTotal === '1') {
+      row.style.display = '';
+      return;
+    }
+    const area = (row.dataset.area || '').toLowerCase();
+    const district = (row.dataset.district || '').toLowerCase();
+    const text = area + ' ' + district;
+    const match = keywords.length === 0 || keywords.some(k => text.includes(k));
+    row.style.display = match ? '' : 'none';
+  });
+}
+
+// ===== 表格排序 =====
+let currentSortCol = -1;
+let currentSortAsc = true;
+
+function sortTable(colIdx, type, thEl) {
+  const tbody = document.querySelector('#dataTable tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+
+  // 分離總計列
+  const dataRows = rows.filter(r => r.dataset.isTotal !== '1');
+  const totalRows = rows.filter(r => r.dataset.isTotal === '1');
+
+  // 切換排序方向
+  if (currentSortCol === colIdx) {
+    currentSortAsc = !currentSortAsc;
+  } else {
+    currentSortCol = colIdx;
+    currentSortAsc = false; // 預設降序（高的在前）
+  }
+
+  // 清除所有排序標記
+  document.querySelectorAll('thead tr:nth-child(2) th').forEach(th => th.classList.remove('sorted'));
+  thEl.classList.add('sorted');
+  thEl.querySelector('.sort-arrow').textContent = currentSortAsc ? '↑' : '↓';
+
+  dataRows.sort((a, b) => {
+    let va = a.children[colIdx].textContent.trim();
+    let vb = b.children[colIdx].textContent.trim();
+
+    if (type === 'pct') {
+      va = va === '-' ? -1 : parseFloat(va);
+      vb = vb === '-' ? -1 : parseFloat(vb);
+    } else {
+      va = parseFloat(va) || 0;
+      vb = parseFloat(vb) || 0;
+    }
+
+    return currentSortAsc ? va - vb : vb - va;
+  });
+
+  // 重新排列 DOM
+  dataRows.forEach(r => tbody.appendChild(r));
+  totalRows.forEach(r => tbody.appendChild(r));
+}
+
+// ===== 下載 PDF（透過瀏覽器列印） =====
+function downloadPDF() {
+  window.print();
+}
+
+// ===== 下載 CSV =====
+function downloadCSV() {
+  const table = document.getElementById('dataTable');
+  const rows = table.querySelectorAll('tr');
+  const csvLines = [];
+
+  // 手動組第一行標題（因為 colspan/rowspan 不好直接抓）
+  csvLines.push([
+    '區域', '地區',
+    '個人資料卡-基本盤', '個人資料卡-自訂目標', '個人資料卡-達成', '個人資料卡-2026達成率',
+    '兩年三倍-目標', '兩年三倍-達成率',
+    '御本尊-基本盤', '御本尊-自訂目標', '御本尊-達成', '御本尊-達成率',
+    'My創新-基本盤', 'My創新-自訂目標', 'My創新-達成', 'My創新-達成率',
+    '實動會員數-基本盤', '實動會員數-自訂目標', '實動會員數-達成', '實動會員數-達成率'
+  ].join(','));
+
+  // 資料列（跳過 thead 的 2 行）
+  const bodyRows = table.querySelectorAll('tbody tr');
+  bodyRows.forEach(row => {
+    if (row.style.display === 'none') return; // 跳過被篩選隱藏的
+    const cells = Array.from(row.children);
+    const vals = cells.map(td => {
+      let v = td.textContent.trim();
+      // CSV 安全：包含逗號或引號時加引號
+      if (v.includes(',') || v.includes('"')) {
+        v = '"' + v.replace(/"/g, '""') + '"';
+      }
+      return v;
+    });
+    csvLines.push(vals.join(','));
+  });
+
+  const csvContent = '\uFEFF' + csvLines.join('\n'); // BOM for Excel 正確顯示中文
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '壯年部_統計_2026-03-21.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 年度目標 {{ dept_name }} 統計</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* ===== Header ===== */
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 4px;
+  }
+
+  .report-date {
+    font-size: 14px;
+    color: #888;
+  }
+
+  /* ===== 儀表板：總覽卡片 ===== */
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+
+  .card.card-personal::before  { background: #3498db; }
+  .card.card-gohonzon::before  { background: #27ae60; }
+  .card.card-mycreation::before { background: #9b59b6; }
+  .card.card-active::before    { background: #e67e22; }
+
+  .card-title {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .card-rate {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .card-personal .card-rate  { color: #2980b9; }
+  .card-gohonzon .card-rate  { color: #27ae60; }
+  .card-mycreation .card-rate { color: #8e44ad; }
+  .card-active .card-rate    { color: #d35400; }
+
+  .card-detail {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .card-done {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    background: #e8f8f5;
+    color: #1abc9c;
+  }
+
+  /* 圓環進度 */
+  .ring-wrapper {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 8px;
+    position: relative;
+  }
+
+  .ring-wrapper svg {
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 8;
+  }
+
+  .ring-progress {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+
+  .ring-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* ===== 中間區塊：排行榜 + 分佈 ===== */
+  .mid-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 900px) {
+    .mid-section { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 16px;
+  }
+
+  /* 分頁 tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 20px;
+    background: #eef1f5;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: #3498db;
+    color: #fff;
+  }
+
+  /* 排行榜列表 */
+  .rank-list {
+    list-style: none;
+  }
+
+  .rank-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    gap: 12px;
+  }
+
+  .rank-item:last-child {
+    border-bottom: none;
+  }
+
+  .rank-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .rank-1 { background: #fff8e1; color: #f9a825; }
+  .rank-2 { background: #f3f3f3; color: #757575; }
+  .rank-3 { background: #fff3e0; color: #ef6c00; }
+  .rank-other { background: #f5f5f5; color: #999; }
+
+  .rank-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rank-district {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .rank-area {
+    font-size: 11px;
+    color: #999;
+  }
+
+  .rank-bar-wrapper {
+    flex: 0 0 120px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rank-bar {
+    flex: 1;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .rank-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #74b9ff, #0984e3);
+    transition: width 0.4s ease;
+  }
+
+  .rank-rate {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* 分佈長條 */
+  .dist-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+
+  .dist-label {
+    width: 80px;
+    font-size: 13px;
+    text-align: right;
+    color: #555;
+    flex-shrink: 0;
+  }
+
+  .dist-bar {
+    flex: 1;
+    height: 24px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .dist-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    transition: width 0.4s ease;
+    min-width: fit-content;
+  }
+
+  .dist-count {
+    font-size: 13px;
+    font-weight: 600;
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .fill-100 { background: #a8e6cf; color: #1e6e34; }
+  .fill-80  { background: #b8d4e3; color: #1a4a6e; }
+  .fill-50  { background: #c5cae9; color: #3a3f78; }
+  .fill-30  { background: #d7d2e8; color: #5a4f7a; }
+  .fill-0   { background: #e0e0e0; color: #666; }
+
+  /* ===== 搜尋列 ===== */
+  .search-bar {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .search-input {
+    padding: 10px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 280px;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+
+  .search-hint {
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  /* ===== 資料表格 ===== */
+  .table-wrapper {
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 1200px;
+    font-size: 13px;
+  }
+
+  /* 表頭 */
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 10px 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+  }
+
+  thead tr:first-child th {
+    background: #34495e;
+  }
+
+  .cat-personal  { background: #2980b9 !important; }
+  .cat-gohonzon  { background: #27ae60 !important; }
+  .cat-mycreation { background: #8e44ad !important; }
+  .cat-active    { background: #d35400 !important; }
+
+  /* 兩年三倍欄位特殊標記 */
+  .cat-twoyear {
+    background: #1a5276 !important;
+    position: relative;
+  }
+
+  .cat-twoyear::after {
+    content: 'NEW';
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 9px;
+    background: #f39c12;
+    color: #fff;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+
+  thead tr:nth-child(2) th {
+    background: #3d566e;
+    font-weight: 500;
+    font-size: 12px;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  thead tr:nth-child(2) th.sortable {
+    cursor: pointer;
+  }
+
+  thead tr:nth-child(2) th.sortable:hover {
+    background: #4a6a85;
+  }
+
+  thead tr:nth-child(2) th.sortable .sort-arrow {
+    font-size: 10px;
+    margin-left: 3px;
+    opacity: 0.5;
+  }
+
+  thead tr:nth-child(2) th.sortable.sorted .sort-arrow {
+    opacity: 1;
+  }
+
+  /* 資料列 */
+  tbody td {
+    padding: 7px 8px;
+    border: 1px solid #eaeaea;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  td.text-left {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  tr.group-odd td.text-left { background: #f7f9fc; }
+
+  /* 總計列 */
+  tr.total-row td {
+    font-weight: 700;
+    background: #eef2f7 !important;
+    border-top: 2px solid #7f8c8d;
+  }
+
+  /* 兩年三倍欄位底色 */
+  .cell-twoyear {
+    background: #eaf2f8;
+  }
+
+  tr.total-row .cell-twoyear {
+    background: #d4e6f1 !important;
+  }
+
+  /* ===== 達成率色階（柔和版）===== */
+  .rate-100 { background-color: #d4edda; color: #1e6e34; }   /* ≥100% 薄荷綠 */
+  .rate-80  { background-color: #d1ecf1; color: #0c5460; }   /* ≥80%  天空藍 */
+  .rate-50  { background-color: #dee2f1; color: #3a3f78; }   /* ≥50%  薰衣草 */
+  .rate-30  { background-color: #e8e5ef; color: #5a4f7a; }   /* ≥30%  淡紫灰 */
+
+  /* 達成數凸顯 */
+  td.cell-done {
+    background: #e8f8f5;
+    font-weight: 700;
+    color: #148f77;
+  }
+
+  tr.total-row td.cell-done {
+    background: #d1f2eb !important;
+  }
+
+  /* 類別分隔線 */
+  .cat-divider {
+    border-left: 3px solid #bdc3c7 !important;
+  }
+
+  /* ===== 圖例 ===== */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+  }
+
+  /* ===== 頁尾 ===== */
+  footer {
+    text-align: center;
+    margin-top: 24px;
+    padding: 16px;
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  /* ===== 下載按鈕列 ===== */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-pdf {
+    background: #e74c3c;
+    color: #fff;
+  }
+
+  .btn-pdf:hover { background: #c0392b; }
+
+  .btn-csv {
+    background: #27ae60;
+    color: #fff;
+  }
+
+  .btn-csv:hover { background: #219a52; }
+
+  /* ===== 列印（整頁） ===== */
+  @media print {
+    body { padding: 0; background: #fff; }
+    .toolbar { display: none; }
+    .search-bar { display: none; }
+    .table-wrapper { box-shadow: none; overflow: visible; }
+    .container { max-width: 100%; padding: 8px; }
+    thead th { position: static; }
+    table { font-size: 10px; min-width: unset; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>2026 年度目標 {{ dept_name }} 達成進度表</h1>
+  <p class="report-date">製表日期：{{ report_date }}</p>
+</header>
+
+{# ===== 儀表板：總覽卡片 ===== #}
+<div class="dashboard">
+  {%- set cat_styles = {
+    '個人資料卡': {'cls': 'card-personal', 'color': '#2980b9', 'label': '個人資料卡（新入會）'},
+    '御本尊':     {'cls': 'card-gohonzon', 'color': '#27ae60', 'label': '御本尊'},
+    'My創新':     {'cls': 'card-mycreation', 'color': '#8e44ad', 'label': 'My創新'},
+    '實動會員數': {'cls': 'card-active', 'color': '#d35400', 'label': '實動會員數'}
+  } %}
+
+  {%- for cat_name in categories %}
+  {%- set s = summary[cat_name] %}
+  {%- set cs = cat_styles[cat_name] %}
+  {%- set pct = (s.total_rate * 100) if s.total_rate else 0 %}
+  {%- set ring_pct = [pct, 100] | min %}
+  {%- set circ = 282.74 %}
+  {%- set offset = circ - (circ * ring_pct / 100) %}
+  <div class="card {{ cs.cls }}">
+    <div class="card-title">{{ cs.label }}</div>
+    <div class="ring-wrapper">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle class="ring-bg" cx="50" cy="50" r="45"/>
+        <circle class="ring-progress" cx="50" cy="50" r="45"
+                stroke="{{ cs.color }}"
+                stroke-dasharray="{{ circ }}"
+                stroke-dashoffset="{{ offset }}"/>
+      </svg>
+      <div class="ring-text" style="color:{{ cs.color }}">{{ "%.1f"|format(pct) }}%</div>
+    </div>
+    <div class="card-done">達成 {{ s.total_done }}</div>
+    <div class="card-detail" style="margin-top:4px;">
+      自訂目標 {{ s.total_custom }}
+    </div>
+    {%- if cat_name == '個人資料卡' and s.two_year_rate is not none %}
+    <div class="card-detail" style="margin-top:4px; color:#1a5276; font-weight:600;">
+      兩年三倍達成率：{{ "%.1f"|format(s.two_year_rate * 100) }}%（目標 {{ s.two_year_target }}）
+    </div>
+    {%- endif %}
+  </div>
+  {%- endfor %}
+</div>
+
+{# ===== 排行榜 + 分佈 ===== #}
+<div class="mid-section">
+  {# 排行榜 #}
+  <div class="panel">
+    <div class="panel-title">達成率排行榜 Top 10</div>
+    <div class="tabs" id="rank-tabs">
+      {%- for cat_name in categories %}
+      <button class="tab-btn {{ 'active' if loop.first else '' }}"
+              onclick="switchRankTab('{{ cat_name }}', this)">{{ cat_name }}</button>
+      {%- endfor %}
+    </div>
+
+    {%- for cat_name in categories %}
+    <ol class="rank-list" id="rank-{{ loop.index }}" style="{{ '' if loop.first else 'display:none' }}">
+      {%- for item in summary[cat_name].ranked[:10] %}
+      {%- set rank_cls = 'rank-1' if loop.index == 1 else ('rank-2' if loop.index == 2 else ('rank-3' if loop.index == 3 else 'rank-other')) %}
+      <li class="rank-item">
+        <span class="rank-num {{ rank_cls }}">{{ loop.index }}</span>
+        <div class="rank-info">
+          <div class="rank-district">{{ item.district }}</div>
+          <div class="rank-area">{{ item.area }}</div>
+        </div>
+        <div class="rank-bar-wrapper">
+          <div class="rank-bar">
+            <div class="rank-bar-fill" style="width:{{ [item.rate * 100, 100] | min }}%"></div>
+          </div>
+          <span class="rank-rate">{{ "%.1f"|format(item.rate * 100) }}%</span>
+        </div>
+      </li>
+      {%- endfor %}
+      {%- if not summary[cat_name].ranked %}
+      <li class="rank-item" style="justify-content:center;color:#aaa;">尚無資料</li>
+      {%- endif %}
+    </ol>
+    {%- endfor %}
+  </div>
+
+  {# 分佈 #}
+  <div class="panel">
+    <div class="panel-title">達成率分佈</div>
+    <div class="tabs" id="dist-tabs">
+      {%- for cat_name in categories %}
+      <button class="tab-btn {{ 'active' if loop.first else '' }}"
+              onclick="switchDistTab('{{ cat_name }}', this)">{{ cat_name }}</button>
+      {%- endfor %}
+    </div>
+
+    {%- for cat_name in categories %}
+    {%- set d = summary[cat_name].distribution %}
+    {%- set total = summary[cat_name].total_areas or 1 %}
+    <div class="dist-content" id="dist-{{ loop.index }}" style="{{ '' if loop.first else 'display:none' }}">
+      <div class="dist-row">
+        <span class="dist-label">≥ 100%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-100" style="width:{{ (d.gte100 / total * 100) | round(1) }}%">{{ d.gte100 }}區</div></div>
+        <span class="dist-count">{{ d.gte100 }}</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">80% ~ 99%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-80" style="width:{{ (d.gte80 / total * 100) | round(1) }}%">{{ d.gte80 }}區</div></div>
+        <span class="dist-count">{{ d.gte80 }}</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">50% ~ 79%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-50" style="width:{{ (d.gte50 / total * 100) | round(1) }}%">{{ d.gte50 }}區</div></div>
+        <span class="dist-count">{{ d.gte50 }}</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">30% ~ 49%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-30" style="width:{{ (d.gte30 / total * 100) | round(1) }}%">{{ d.gte30 }}區</div></div>
+        <span class="dist-count">{{ d.gte30 }}</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-label">< 30%</span>
+        <div class="dist-bar"><div class="dist-bar-fill fill-0" style="width:{{ (d.lt30 / total * 100) | round(1) }}%">{{ d.lt30 }}區</div></div>
+        <span class="dist-count">{{ d.lt30 }}</span>
+      </div>
+    </div>
+    {%- endfor %}
+  </div>
+</div>
+
+{# ===== 工具列 + 搜尋 ===== #}
+<div class="toolbar">
+  <button class="btn btn-pdf" onclick="downloadPDF()">&#128196; 下載 PDF</button>
+  <button class="btn btn-csv" onclick="downloadCSV()">&#128202; 下載 CSV</button>
+</div>
+
+<div class="search-bar">
+  <input type="text" class="search-input" id="searchInput"
+         placeholder="搜尋區域或地區名稱…" oninput="filterTable()">
+  <span class="search-hint">多個關鍵字用空格分隔（例：花蓮 台東 蘭陽）</span>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-color" style="background:#d4edda"></span>達成率 ≥ 100%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#d1ecf1"></span>達成率 ≥ 80%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#dee2f1"></span>達成率 ≥ 50%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#e8e5ef"></span>達成率 ≥ 30%</div>
+  <div class="legend-item"><span class="legend-color" style="background:#eaf2f8;border:2px solid #2980b9"></span>兩年三倍（今年新增）</div>
+</div>
+
+{# ===== 資料表格 ===== #}
+<div class="table-wrapper">
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th rowspan="2" style="min-width:80px">區域</th>
+        <th rowspan="2" style="min-width:90px">地區</th>
+        <th colspan="4" class="cat-personal">個人資料卡（新入會）</th>
+        <th colspan="2" class="cat-twoyear">兩年三倍</th>
+        <th colspan="4" class="cat-gohonzon">御本尊</th>
+        <th colspan="4" class="cat-mycreation">My創新</th>
+        <th colspan="4" class="cat-active">實動會員數</th>
+      </tr>
+      <tr>
+        {# 個人資料卡 #}
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="4" onclick="sortTable(4,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="5" onclick="sortTable(5,'pct',this)">2026達成率 <span class="sort-arrow">⇅</span></th>
+        {# 兩年三倍 #}
+        <th class="cat-divider">目標</th>
+        <th class="sortable" data-col="7" onclick="sortTable(7,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+        {# 御本尊 #}
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="10" onclick="sortTable(10,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="11" onclick="sortTable(11,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+        {# My創新 #}
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="14" onclick="sortTable(14,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="15" onclick="sortTable(15,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+        {# 實動會員數 #}
+        <th class="cat-divider">基本盤</th>
+        <th>自訂目標</th>
+        <th class="sortable" data-col="18" onclick="sortTable(18,'num',this)">達成 <span class="sort-arrow">⇅</span></th>
+        <th class="sortable" data-col="19" onclick="sortTable(19,'pct',this)">達成率 <span class="sort-arrow">⇅</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for row in rows %}
+      <tr class="{{ 'total-row' if row.is_total else ('group-odd' if row.group_idx % 2 == 1 else '') }}"
+          data-area="{{ row.area }}" data-district="{{ row.district }}"
+          {{ 'data-is-total="1"' if row.is_total else '' }}>
+        <td class="text-left">{{ row.area }}</td>
+        <td class="text-left">{{ row.district }}</td>
+
+        {# ---- 個人資料卡 ---- #}
+        {%- set cat = row.categories['個人資料卡'] %}
+        <td class="cat-divider">{{ cat.base }}</td>
+        <td>{{ cat.custom }}</td>
+        <td class="cell-done">{{ cat.done }}</td>
+        <td class="{{ rate_class(cat.rate) }}">
+          {%- if cat.rate is not none %}{{ "%.1f%%"|format(cat.rate * 100) }}{% else %}-{% endif -%}
+        </td>
+
+        {# ---- 兩年三倍 ---- #}
+        <td class="cat-divider cell-twoyear">{{ cat.two_year_target }}</td>
+        <td class="cell-twoyear {{ rate_class(cat.two_year_rate) }}">
+          {%- if cat.two_year_rate is not none %}{{ "%.1f%%"|format(cat.two_year_rate * 100) }}{% else %}-{% endif -%}
+        </td>
+
+        {# ---- 御本尊 ---- #}
+        {%- set cat = row.categories['御本尊'] %}
+        <td class="cat-divider">{{ cat.base }}</td>
+        <td>{{ cat.custom }}</td>
+        <td class="cell-done">{{ cat.done }}</td>
+        <td class="{{ rate_class(cat.rate) }}">
+          {%- if cat.rate is not none %}{{ "%.1f%%"|format(cat.rate * 100) }}{% else %}-{% endif -%}
+        </td>
+
+        {# ---- My創新 ---- #}
+        {%- set cat = row.categories['My創新'] %}
+        <td class="cat-divider">{{ cat.base }}</td>
+        <td>{{ cat.custom }}</td>
+        <td class="cell-done">{{ cat.done }}</td>
+        <td class="{{ rate_class(cat.rate) }}">
+          {%- if cat.rate is not none %}{{ "%.1f%%"|format(cat.rate * 100) }}{% else %}-{% endif -%}
+        </td>
+
+        {# ---- 實動會員數 ---- #}
+        {%- set cat = row.categories['實動會員數'] %}
+        <td class="cat-divider">{{ cat.base }}</td>
+        <td>{{ cat.custom }}</td>
+        <td class="cell-done">{{ cat.done }}</td>
+        <td class="{{ rate_class(cat.rate) }}">
+          {%- if cat.rate is not none %}{{ "%.1f%%"|format(cat.rate * 100) }}{% else %}-{% endif -%}
+        </td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  本報表由程式自動產生 ｜ 資料來源：年度目標報表系統
+</footer>
+
+</div><!-- .container -->
+
+<script>
+// ===== 排行榜分頁切換 =====
+function switchRankTab(catName, btn) {
+  document.querySelectorAll('#rank-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const lists = btn.parentElement.parentElement.querySelectorAll('.rank-list');
+  lists.forEach(l => l.style.display = 'none');
+  const idx = Array.from(btn.parentElement.children).indexOf(btn);
+  lists[idx].style.display = '';
+}
+
+// ===== 分佈分頁切換 =====
+function switchDistTab(catName, btn) {
+  document.querySelectorAll('#dist-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const contents = btn.parentElement.parentElement.querySelectorAll('.dist-content');
+  contents.forEach(c => c.style.display = 'none');
+  const idx = Array.from(btn.parentElement.children).indexOf(btn);
+  contents[idx].style.display = '';
+}
+
+// ===== 搜尋篩選（空格分隔 = OR） =====
+function filterTable() {
+  const input = document.getElementById('searchInput').value.trim().toLowerCase();
+  const keywords = input.split(/\s+/).filter(k => k.length > 0);
+  const rows = document.querySelectorAll('#dataTable tbody tr');
+  rows.forEach(row => {
+    if (row.dataset.isTotal === '1') {
+      row.style.display = '';
+      return;
+    }
+    const area = (row.dataset.area || '').toLowerCase();
+    const district = (row.dataset.district || '').toLowerCase();
+    const text = area + ' ' + district;
+    const match = keywords.length === 0 || keywords.some(k => text.includes(k));
+    row.style.display = match ? '' : 'none';
+  });
+}
+
+// ===== 表格排序 =====
+let currentSortCol = -1;
+let currentSortAsc = true;
+
+function sortTable(colIdx, type, thEl) {
+  const tbody = document.querySelector('#dataTable tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+
+  // 分離總計列
+  const dataRows = rows.filter(r => r.dataset.isTotal !== '1');
+  const totalRows = rows.filter(r => r.dataset.isTotal === '1');
+
+  // 切換排序方向
+  if (currentSortCol === colIdx) {
+    currentSortAsc = !currentSortAsc;
+  } else {
+    currentSortCol = colIdx;
+    currentSortAsc = false; // 預設降序（高的在前）
+  }
+
+  // 清除所有排序標記
+  document.querySelectorAll('thead tr:nth-child(2) th').forEach(th => th.classList.remove('sorted'));
+  thEl.classList.add('sorted');
+  thEl.querySelector('.sort-arrow').textContent = currentSortAsc ? '↑' : '↓';
+
+  dataRows.sort((a, b) => {
+    let va = a.children[colIdx].textContent.trim();
+    let vb = b.children[colIdx].textContent.trim();
+
+    if (type === 'pct') {
+      va = va === '-' ? -1 : parseFloat(va);
+      vb = vb === '-' ? -1 : parseFloat(vb);
+    } else {
+      va = parseFloat(va) || 0;
+      vb = parseFloat(vb) || 0;
+    }
+
+    return currentSortAsc ? va - vb : vb - va;
+  });
+
+  // 重新排列 DOM
+  dataRows.forEach(r => tbody.appendChild(r));
+  totalRows.forEach(r => tbody.appendChild(r));
+}
+
+// ===== 下載 PDF（透過瀏覽器列印） =====
+function downloadPDF() {
+  window.print();
+}
+
+// ===== 下載 CSV =====
+function downloadCSV() {
+  const table = document.getElementById('dataTable');
+  const rows = table.querySelectorAll('tr');
+  const csvLines = [];
+
+  // 手動組第一行標題（因為 colspan/rowspan 不好直接抓）
+  csvLines.push([
+    '區域', '地區',
+    '個人資料卡-基本盤', '個人資料卡-自訂目標', '個人資料卡-達成', '個人資料卡-2026達成率',
+    '兩年三倍-目標', '兩年三倍-達成率',
+    '御本尊-基本盤', '御本尊-自訂目標', '御本尊-達成', '御本尊-達成率',
+    'My創新-基本盤', 'My創新-自訂目標', 'My創新-達成', 'My創新-達成率',
+    '實動會員數-基本盤', '實動會員數-自訂目標', '實動會員數-達成', '實動會員數-達成率'
+  ].join(','));
+
+  // 資料列（跳過 thead 的 2 行）
+  const bodyRows = table.querySelectorAll('tbody tr');
+  bodyRows.forEach(row => {
+    if (row.style.display === 'none') return; // 跳過被篩選隱藏的
+    const cells = Array.from(row.children);
+    const vals = cells.map(td => {
+      let v = td.textContent.trim();
+      // CSV 安全：包含逗號或引號時加引號
+      if (v.includes(',') || v.includes('"')) {
+        v = '"' + v.replace(/"/g, '""') + '"';
+      }
+      return v;
+    });
+    csvLines.push(vals.join(','));
+  });
+
+  const csvContent = '\uFEFF' + csvLines.join('\n'); // BOM for Excel 正確顯示中文
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '{{ dept_name }}_統計_{{ report_date }}.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>

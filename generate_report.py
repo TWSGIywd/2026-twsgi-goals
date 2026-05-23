@@ -280,8 +280,10 @@ def main():
     template = env.get_template('template.html')
 
     # 4. 產出報表
-    output_dir = os.path.join(base_dir, 'docs')
-    os.makedirs(output_dir, exist_ok=True)
+    docs_dir = os.path.join(base_dir, 'docs')
+    history_dir = os.path.join(docs_dir, report_date)
+    os.makedirs(docs_dir, exist_ok=True)
+    os.makedirs(history_dir, exist_ok=True)
 
     for dept_name, col_map in DEPARTMENTS.items():
         # 雙重驗算
@@ -298,14 +300,24 @@ def main():
             summary=summary,
         )
 
-        out_path = os.path.join(output_dir, f'{dept_name}_統計.html')
-        with open(out_path, 'w', encoding='utf-8') as f:
+        filename = f'{dept_name}_統計.html'
+
+        # 寫入最新版（docs/ 根目錄，供 GitHub Pages）
+        with open(os.path.join(docs_dir, filename), 'w', encoding='utf-8') as f:
             f.write(html)
-        print(f"  ✓ {out_path}")
+
+        # 寫入歷史版（docs/YYYY-MM-DD/）
+        with open(os.path.join(history_dir, filename), 'w', encoding='utf-8') as f:
+            f.write(html)
+
+        print(f"  ✓ {filename}")
+
+    print(f"\n最新報表: {docs_dir}/")
+    print(f"歷史存檔: {history_dir}/")
 
     wb_total.close()
     wb_area.close()
-    print("\n全部完成！請至 output/ 目錄查看報表。")
+    print("全部完成！")
 
 
 if __name__ == '__main__':

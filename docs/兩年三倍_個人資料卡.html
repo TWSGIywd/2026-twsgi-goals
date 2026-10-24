@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個人資料卡 兩年三倍看板</title>
+<style>
+  :root { --ink:#2c3e50; --sub:#6b7280; --bg:#f0f2f5; --card:#fff; --line:#e5e7eb;
+          --c壯年部:#3498db; --c婦人部:#e67e22; --c男子部:#2ecc71; --c女子部:#9b59b6; --c合計:#34495e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif; background: var(--bg); color: var(--ink); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 24px; }
+  .meta { color: var(--sub); font-size: 13px; margin-top: 6px; line-height: 1.7; }
+  .tp { display:inline-block; background:#fff7e6; color:#8a5a00; border-radius: 999px; padding: 2px 10px; font-size: 13px; margin-top: 8px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 20px 0 28px; }
+  .card { background: var(--card); border-radius: 14px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,.05); border-top: 5px solid var(--c); }
+  .card h2 { font-size: 16px; }
+  .big { font-size: 30px; font-weight: 700; margin-top: 6px; }
+  .frac { color: var(--sub); font-size: 13px; }
+  .bar { position: relative; height: 12px; background: #eef0f3; border-radius: 6px; margin: 10px 0 6px; overflow: visible; }
+  .bar > i { display:block; height:100%; border-radius: 6px; background: var(--c); max-width: 100%; }
+  .bar > b { position:absolute; top:-4px; bottom:-4px; width:2px; background:#f59e0b; }
+  .gap { font-size: 13px; color: var(--sub); }
+  .ahead { color:#1e6e34; font-weight:700; } .behind { color: var(--sub); }
+  .tools { display:flex; gap:8px; align-items:center; flex-wrap: wrap; margin-bottom: 10px; font-size: 14px; }
+  .tools button { border:1px solid var(--line); background:#fff; border-radius: 8px; padding: 6px 12px; cursor:pointer; font: inherit; }
+  .tools button.on { background: var(--ink); color:#fff; border-color: var(--ink); }
+  .tablewrap { background:#fff; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow-x: auto; }
+  table { width:100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+  th, td { padding: 9px 10px; text-align: center; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { background:#f8fafc; position: sticky; top: 0; font-weight: 700; }
+  th .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; vertical-align: middle; }
+  td.name { text-align:left; font-weight:700; cursor:pointer; }
+  tr.dist td.name { font-weight:400; padding-left: 28px; cursor: default; color: #374151; }
+  tr.dist { background:#fcfcfd; }
+  td small { display:block; color: var(--sub); font-size: 11px; }
+  .r100 { background:#d4edda; color:#1e6e34; } .r80 { background:#d1ecf1; color:#0c5460; }
+  .r50 { background:#dee2f1; color:#3a3f78; } .r30 { background:#e8e5ef; color:#5a4f7a; }
+  .up::after { content:" ▲"; color:#1e6e34; font-size: 10px; }
+  .legend { font-size: 12px; color: var(--sub); margin-top: 10px; line-height: 1.8; }
+  .legend span { display:inline-block; padding: 1px 8px; border-radius: 6px; margin-right: 4px; }
+  @media (max-width: 600px) { .big { font-size: 24px; } h1 { font-size: 20px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>個人資料卡　兩年三倍達成看板</h1>
+  <div class="meta">達成率＝2026 年達成數 ÷（總合目標 × 2）｜資料來源：新統監系統｜每天 07:00 自動更新<br>最後更新：<b id="upd"></b></div>
+  <div class="tp" id="tp"></div>
+  <div class="cards" id="cards"></div>
+  <div class="tools">各圈　<button id="sOrder" class="on">圈序</button><button id="sRate">合計達成率 高→低</button>
+    <button id="expand">全部展開</button><span style="color:var(--sub)">點圈名可展開各區</span></div>
+  <div class="tablewrap"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
+  <div class="legend">
+    <span class="r100">≥100%</span><span class="r80">≥80%</span><span class="r50">≥50%</span><span class="r30">≥30%</span>
+    ▲＝達成率已超過時間進度　｜　卡片進度條上的橘線＝時間進度
+  </div>
+</div>
+<script>
+const D = {"updated": "2026/10/24 19:08", "tp": 0.40684931506849314, "elapsed": 297, "totalDays": 730, "nation": {"壯年部": [948, 555], "婦人部": [2652, 1536], "男子部": [948, 337], "女子部": [948, 272], "合計": [5496, 2700]}, "circles": [{"name": "蘭陽圈", "sum": {"壯年部": [28, 7], "婦人部": [88, 59], "男子部": [28, 6], "女子部": [28, 5], "合計": [172, 77]}, "dists": [{"name": "蘭陽北區", "sum": {"壯年部": [16, 4], "婦人部": [48, 33], "男子部": [16, 2], "女子部": [16, 3], "合計": [96, 42]}}, {"name": "蘭陽南區", "sum": {"壯年部": [12, 3], "婦人部": [40, 26], "男子部": [12, 4], "女子部": [12, 2], "合計": [76, 35]}}]}, {"name": "花東圈", "sum": {"壯年部": [30, 12], "婦人部": [66, 33], "男子部": [30, 2], "女子部": [30, 7], "合計": [156, 54]}, "dists": [{"name": "花蓮區", "sum": {"壯年部": [18, 9], "婦人部": [42, 31], "男子部": [18, 1], "女子部": [18, 6], "合計": [96, 47]}}, {"name": "台東區", "sum": {"壯年部": [12, 3], "婦人部": [24, 2], "男子部": [12, 1], "女子部": [12, 1], "合計": [60, 7]}}]}, {"name": "基隆圈", "sum": {"壯年部": [34, 8], "婦人部": [114, 54], "男子部": [34, 83], "女子部": [34, 10], "合計": [216, 155]}, "dists": [{"name": "基隆北區", "sum": {"壯年部": [16, 6], "婦人部": [52, 29], "男子部": [16, 36], "女子部": [16, 4], "合計": [100, 75]}}, {"name": "基隆東區", "sum": {"壯年部": [18, 2], "婦人部": [58, 24], "男子部": [18, 47], "女子部": [18, 6], "合計": [112, 79]}}, {"name": "馬祖", "sum": {"壯年部": [0, 0], "婦人部": [4, 1], "男子部": [0, 0], "女子部": [0, 0], "合計": [4, 1]}}]}, {"name": "淡北圈", "sum": {"壯年部": [36, 22], "婦人部": [110, 51], "男子部": [36, 4], "女子部": [36, 6], "合計": [218, 83]}, "dists": [{"name": "淡水區", "sum": {"壯年部": [12, 9], "婦人部": [40, 16], "男子部": [12, 2], "女子部": [12, 0], "合計": [76, 27]}}, {"name": "北投區", "sum": {"壯年部": [12, 7], "婦人部": [34, 21], "男子部": [12, 1], "女子部": [12, 3], "合計": [70, 32]}}, {"name": "士林區", "sum": {"壯年部": [12, 6], "婦人部": [36, 14], "男子部": [12, 1], "女子部": [12, 3], "合計": [72, 24]}}]}, {"name": "北一圈", "sum": {"壯年部": [44, 24], "婦人部": [124, 65], "男子部": [44, 10], "女子部": [44, 12], "合計": [256, 111]}, "dists": [{"name": "汐止區", "sum": {"壯年部": [16, 12], "婦人部": [46, 30], "男子部": [16, 4], "女子部": [16, 8], "合計": [94, 54]}}, {"name": "內湖區", "sum": {"壯年部": [12, 5], "婦人部": [36, 24], "男子部": [12, 2], "女子部": [12, 1], "合計": [72, 32]}}, {"name": "台北東區", "sum": {"壯年部": [16, 7], "婦人部": [42, 11], "男子部": [16, 4], "女子部": [16, 3], "合計": [90, 25]}}]}, {"name": "北二圈", "sum": {"壯年部": [52, 27], "婦人部": [150, 90], "男子部": [52, 3], "女子部": [52, 4], "合計": [306, 124]}, "dists": [{"name": "市府區", "sum": {"壯年部": [18, 12], "婦人部": [52, 28], "男子部": [18, 1], "女子部": [18, 2], "合計": [106, 43]}}, {"name": "台北中區", "sum": {"壯年部": [18, 8], "婦人部": [52, 29], "男子部": [18, 0], "女子部": [18, 0], "合計": [106, 37]}}, {"name": "台北西區", "sum": {"壯年部": [16, 7], "婦人部": [46, 33], "男子部": [16, 2], "女子部": [16, 2], "合計": [94, 44]}}]}, {"name": "北三圈", "sum": {"壯年部": [28, 13], "婦人部": [70, 55], "男子部": [28, 4], "女子部": [28, 5], "合計": [154, 77]}, "dists": [{"name": "北南一區", "sum": {"壯年部": [12, 8], "婦人部": [34, 26], "男子部": [12, 3], "女子部": [12, 5], "合計": [70, 42]}}, {"name": "北南二區", "sum": {"壯年部": [16, 5], "婦人部": [36, 29], "男子部": [16, 1], "女子部": [16, 0], "合計": [84, 35]}}]}, {"name": "雙和圈", "sum": {"壯年部": [30, 29], "婦人部": [88, 49], "男子部": [30, 31], "女子部": [30, 5], "合計": [178, 114]}, "dists": [{"name": "永和區", "sum": {"壯年部": [12, 9], "婦人部": [36, 18], "男子部": [12, 12], "女子部": [12, 0], "合計": [72, 39]}}, {"name": "中和區", "sum": {"壯年部": [18, 20], "婦人部": [52, 31], "男子部": [18, 19], "女子部": [18, 5], "合計": [106, 75]}}]}, {"name": "板城圈", "sum": {"壯年部": [40, 38], "婦人部": [110, 62], "男子部": [40, 12], "女子部": [40, 18], "合計": [230, 130]}, "dists": [{"name": "板橋區", "sum": {"壯年部": [18, 17], "婦人部": [52, 37], "男子部": [18, 4], "女子部": [18, 7], "合計": [106, 65]}}, {"name": "城林區", "sum": {"壯年部": [22, 21], "婦人部": [58, 25], "男子部": [22, 8], "女子部": [22, 11], "合計": [124, 65]}}]}, {"name": "三新圈", "sum": {"壯年部": [68, 52], "婦人部": [160, 93], "男子部": [68, 12], "女子部": [68, 14], "合計": [364, 171]}, "dists": [{"name": "泰林區", "sum": {"壯年部": [12, 13], "婦人部": [30, 15], "男子部": [12, 6], "女子部": [12, 6], "合計": [66, 40]}}, {"name": "蘆洲區", "sum": {"壯年部": [12, 10], "婦人部": [30, 19], "男子部": [12, 2], "女子部": [12, 1], "合計": [66, 32]}}, {"name": "三重區", "sum": {"壯年部": [18, 12], "婦人部": [48, 26], "男子部": [18, 0], "女子部": [18, 3], "合計": [102, 41]}}, {"name": "新莊區", "sum": {"壯年部": [22, 17], "婦人部": [46, 31], "男子部": [22, 4], "女子部": [22, 4], "合計": [112, 56]}}, {"name": "金門", "sum": {"壯年部": [4, 0], "婦人部": [6, 2], "男子部": [4, 0], "女子部": [4, 0], "合計": [18, 2]}}]}, {"name": "桃園一圈", "sum": {"壯年部": [42, 21], "婦人部": [124, 78], "男子部": [42, 6], "女子部": [42, 13], "合計": [250, 118]}, "dists": [{"name": "桃園北區", "sum": {"壯年部": [24, 12], "婦人部": [64, 36], "男子部": [24, 3], "女子部": [24, 10], "合計": [136, 61]}}, {"name": "桃園東區", "sum": {"壯年部": [18, 9], "婦人部": [60, 42], "男子部": [18, 3], "女子部": [18, 3], "合計": [114, 57]}}]}, {"name": "桃園二圈", "sum": {"壯年部": [42, 28], "婦人部": [100, 67], "男子部": [42, 26], "女子部": [42, 22], "合計": [226, 143]}, "dists": [{"name": "桃園中區", "sum": {"壯年部": [18, 10], "婦人部": [48, 32], "男子部": [18, 6], "女子部": [18, 7], "合計": [102, 55]}}, {"name": "桃園西區", "sum": {"壯年部": [24, 18], "婦人部": [52, 35], "男子部": [24, 20], "女子部": [24, 15], "合計": [124, 88]}}]}, {"name": "竹苗圈", "sum": {"壯年部": [58, 38], "婦人部": [176, 79], "男子部": [58, 21], "女子部": [58, 5], "合計": [350, 143]}, "dists": [{"name": "竹縣區", "sum": {"壯年部": [24, 14], "婦人部": [70, 42], "男子部": [24, 14], "女子部": [24, 3], "合計": [142, 73]}}, {"name": "新竹區", "sum": {"壯年部": [18, 12], "婦人部": [66, 27], "男子部": [18, 6], "女子部": [18, 1], "合計": [120, 46]}}, {"name": "苗栗區", "sum": {"壯年部": [16, 12], "婦人部": [40, 10], "男子部": [16, 1], "女子部": [16, 1], "合計": [88, 24]}}]}, {"name": "台中一圈", "sum": {"壯年部": [40, 24], "婦人部": [130, 63], "男子部": [40, 9], "女子部": [40, 14], "合計": [250, 110]}, "dists": [{"name": "台中北區", "sum": {"壯年部": [22, 14], "婦人部": [66, 38], "男子部": [22, 4], "女子部": [22, 4], "合計": [132, 60]}}, {"name": "台中中區", "sum": {"壯年部": [18, 10], "婦人部": [64, 25], "男子部": [18, 5], "女子部": [18, 10], "合計": [118, 50]}}]}, {"name": "台中二圈", "sum": {"壯年部": [34, 16], "婦人部": [112, 58], "男子部": [34, 10], "女子部": [34, 11], "合計": [214, 95]}, "dists": [{"name": "台中西區", "sum": {"壯年部": [12, 4], "婦人部": [46, 29], "男子部": [12, 8], "女子部": [12, 7], "合計": [82, 48]}}, {"name": "台中南區", "sum": {"壯年部": [22, 12], "婦人部": [66, 29], "男子部": [22, 2], "女子部": [22, 4], "合計": [132, 47]}}]}, {"name": "彰投圈", "sum": {"壯年部": [44, 23], "婦人部": [122, 72], "男子部": [44, 10], "女子部": [44, 18], "合計": [254, 123]}, "dists": [{"name": "南投區", "sum": {"壯年部": [16, 8], "婦人部": [40, 24], "男子部": [16, 1], "女子部": [16, 1], "合計": [88, 34]}}, {"name": "彰化一區", "sum": {"壯年部": [16, 6], "婦人部": [42, 29], "男子部": [16, 6], "女子部": [16, 13], "合計": [90, 54]}}, {"name": "彰化二區", "sum": {"壯年部": [12, 9], "婦人部": [40, 19], "男子部": [12, 3], "女子部": [12, 4], "合計": [76, 35]}}]}, {"name": "雲嘉圈", "sum": {"壯年部": [54, 36], "婦人部": [138, 105], "男子部": [54, 22], "女子部": [54, 35], "合計": [300, 198]}, "dists": [{"name": "雲林一區", "sum": {"壯年部": [18, 8], "婦人部": [52, 37], "男子部": [18, 5], "女子部": [18, 14], "合計": [106, 64]}}, {"name": "雲林二區", "sum": {"壯年部": [12, 11], "婦人部": [30, 31], "男子部": [12, 8], "女子部": [12, 11], "合計": [66, 61]}}, {"name": "嘉義一區", "sum": {"壯年部": [12, 9], "婦人部": [28, 21], "男子部": [12, 6], "女子部": [12, 6], "合計": [64, 42]}}, {"name": "嘉義二區", "sum": {"壯年部": [12, 8], "婦人部": [28, 16], "男子部": [12, 3], "女子部": [12, 4], "合計": [64, 31]}}]}, {"name": "台南一圈", "sum": {"壯年部": [28, 19], "婦人部": [76, 61], "男子部": [28, 12], "女子部": [28, 15], "合計": [160, 107]}, "dists": [{"name": "台南北區", "sum": {"壯年部": [16, 8], "婦人部": [36, 30], "男子部": [16, 6], "女子部": [16, 7], "合計": [84, 51]}}, {"name": "台南中區", "sum": {"壯年部": [12, 11], "婦人部": [40, 31], "男子部": [12, 6], "女子部": [12, 8], "合計": [76, 56]}}]}, {"name": "台南二圈", "sum": {"壯年部": [42, 21], "婦人部": [112, 69], "男子部": [42, 7], "女子部": [42, 5], "合計": [238, 102]}, "dists": [{"name": "台南南區", "sum": {"壯年部": [24, 13], "婦人部": [58, 30], "男子部": [24, 1], "女子部": [24, 1], "合計": [130, 45]}}, {"name": "台南東區", "sum": {"壯年部": [18, 8], "婦人部": [54, 39], "男子部": [18, 6], "女子部": [18, 4], "合計": [108, 57]}}]}, {"name": "高雄一圈", "sum": {"壯年部": [48, 18], "婦人部": [126, 73], "男子部": [48, 6], "女子部": [48, 5], "合計": [270, 102]}, "dists": [{"name": "岡山區", "sum": {"壯年部": [18, 7], "婦人部": [36, 19], "男子部": [18, 1], "女子部": [18, 0], "合計": [90, 27]}}, {"name": "高雄北區", "sum": {"壯年部": [12, 4], "婦人部": [42, 25], "男子部": [12, 4], "女子部": [12, 1], "合計": [78, 34]}}, {"name": "高雄中區", "sum": {"壯年部": [18, 7], "婦人部": [48, 29], "男子部": [18, 1], "女子部": [18, 4], "合計": [102, 41]}}]}, {"name": "高雄二圈", "sum": {"壯年部": [54, 34], "婦人部": [156, 76], "男子部": [54, 12], "女子部": [54, 10], "合計": [318, 132]}, "dists": [{"name": "高雄西區", "sum": {"壯年部": [12, 8], "婦人部": [40, 19], "男子部": [12, 3], "女子部": [12, 2], "合計": [76, 32]}}, {"name": "高雄南區", "sum": {"壯年部": [18, 13], "婦人部": [52, 20], "男子部": [18, 4], "女子部": [18, 1], "合計": [106, 38]}}, {"name": "高港區", "sum": {"壯年部": [18, 11], "婦人部": [52, 18], "男子部": [18, 4], "女子部": [18, 5], "合計": [106, 38]}}, {"name": "澎湖", "sum": {"壯年部": [6, 2], "婦人部": [12, 19], "男子部": [6, 1], "女子部": [6, 2], "合計": [30, 24]}}]}, {"name": "高雄三圈", "sum": {"壯年部": [48, 33], "婦人部": [140, 107], "男子部": [48, 25], "女子部": [48, 22], "合計": [284, 187]}, "dists": [{"name": "高雄東區", "sum": {"壯年部": [18, 12], "婦人部": [52, 43], "男子部": [18, 7], "女子部": [18, 6], "合計": [106, 68]}}, {"name": "鳳山區", "sum": {"壯年部": [18, 14], "婦人部": [48, 33], "男子部": [18, 9], "女子部": [18, 9], "合計": [102, 65]}}, {"name": "寶發區", "sum": {"壯年部": [12, 7], "婦人部": [40, 31], "男子部": [12, 9], "女子部": [12, 7], "合計": [76, 54]}}]}, {"name": "屏東圈", "sum": {"壯年部": [24, 12], "婦人部": [60, 17], "男子部": [24, 4], "女子部": [24, 11], "合計": [132, 44]}, "dists": [{"name": "屏東一區", "sum": {"壯年部": [12, 5], "婦人部": [30, 12], "男子部": [12, 4], "女子部": [12, 6], "合計": [66, 27]}}, {"name": "屏東二區", "sum": {"壯年部": [12, 7], "婦人部": [30, 5], "男子部": [12, 0], "女子部": [12, 5], "合計": [66, 17]}}]}]};
+const DEPTS = ["壯年部","婦人部","男子部","女子部","合計"];
+const pct = (a,t) => t ? a/t : null;
+const fmt = r => r==null ? "—" : (r*100).toFixed(1)+"%";
+const cls = r => r==null ? "" : r>=1 ? "r100" : r>=.8 ? "r80" : r>=.5 ? "r50" : r>=.3 ? "r30" : "";
+const num = n => n.toLocaleString("zh-TW");
+document.getElementById("upd").textContent = D.updated;
+document.getElementById("tp").textContent = `⏱ 時間進度 ${(D.tp*100).toFixed(1)}%（2026/1/1～2027/12/31，第 ${D.elapsed} / ${D.totalDays} 天）`;
+document.getElementById("cards").innerHTML = DEPTS.map(d => {
+  const [t,a] = D.nation[d], r = pct(a,t), gap = Math.max(t-a,0);
+  return `<div class="card" style="--c:var(--c${d})"><h2>${d}</h2>
+    <div class="big">${fmt(r)}</div><div class="frac">${num(a)} / ${num(t)}</div>
+    <div class="bar"><i style="width:${Math.min((r||0)*100,100)}%"></i><b style="left:${D.tp*100}%"></b></div>
+    <div class="gap">${gap ? "還差 "+num(gap) : "已達標 🎉"}　<span class="${r>=D.tp?'ahead':'behind'}">${r>=D.tp?'超前時間進度':'落後時間進度'}</span></div></div>`;
+}).join("");
+document.getElementById("head").innerHTML = `<th style="text-align:left">圈／區</th>` +
+  DEPTS.map(d => `<th><span class="dot" style="background:var(--c${d})"></span>${d}</th>`).join("");
+let order = "order", open = new Set();
+function cell(s, d, showFrac) {
+  const [t,a] = s[d], r = pct(a,t);
+  return `<td class="${cls(r)}"><span class="${r!=null && r>=D.tp ? 'up' : ''}">${fmt(r)}</span>${showFrac ? `<small>${num(a)} / ${num(t)}</small>` : ""}</td>`;
+}
+function render() {
+  let cs = D.circles.map((c,i) => ({...c, i}));
+  if (order === "rate") cs.sort((x,y) => (pct(...y.sum["合計"].slice().reverse())||0) - (pct(...x.sum["合計"].slice().reverse())||0));
+  document.getElementById("body").innerHTML = cs.map(c => {
+    const isOpen = open.has(c.name);
+    let h = `<tr><td class="name" data-c="${c.name}">${isOpen ? "▾" : "▸"} ${c.name}</td>${DEPTS.map(d => cell(c.sum, d, true)).join("")}</tr>`;
+    if (isOpen) h += c.dists.map(x => `<tr class="dist"><td class="name">${x.name}</td>${DEPTS.map(d => cell(x.sum, d, true)).join("")}</tr>`).join("");
+    return h;
+  }).join("");
+  document.querySelectorAll("td.name[data-c]").forEach(td => td.onclick = () => {
+    const n = td.dataset.c; open.has(n) ? open.delete(n) : open.add(n); render(); });
+}
+document.getElementById("sOrder").onclick = e => { order="order"; e.target.classList.add("on"); sRate.classList.remove("on"); render(); };
+document.getElementById("sRate").onclick = e => { order="rate"; e.target.classList.add("on"); sOrder.classList.remove("on"); render(); };
+document.getElementById("expand").onclick = e => {
+  if (open.size === D.circles.length) { open.clear(); e.target.textContent = "全部展開"; }
+  else { D.circles.forEach(c => open.add(c.name)); e.target.textContent = "全部收合"; }
+  render(); };
+render();
+</script>
+</body>
+</html>

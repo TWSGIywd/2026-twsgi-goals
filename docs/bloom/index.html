@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>櫻梅桃李 花開滿山</title>
+<meta name="description" content="女子部個人資料卡兩年三倍：一朵花＝一張個人資料卡">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<style>
+:root{--text:#fff;--shade:rgba(40,70,110,.42);--round:"Huninn","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#1d2c40;display:flex;justify-content:center;overflow:hidden}
+body::before{content:"";position:fixed;inset:-60px;background:url(s1.jpg) center/cover;filter:blur(30px) brightness(.72) saturate(1.1)}
+.stage{position:relative;flex:0 1 460px;min-width:0;height:100%;min-height:560px;overflow:hidden;background:#cfe6f2;box-shadow:0 0 60px rgba(0,0,0,.35)}
+video,.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.sky{position:absolute;left:0;right:0;top:calc(7% + env(safe-area-inset-top,0px));text-align:center;color:var(--text);font-family:var(--round);text-shadow:0 2px 14px var(--shade);padding:0 16px}
+.title{font-size:1.3rem;letter-spacing:.22em}
+.count{font-size:2.8rem;margin-top:8px;font-variant-numeric:tabular-nums}
+.count small{font-size:1.15rem;opacity:.85}
+.where{font-size:.95rem;letter-spacing:.08em;margin-top:6px;line-height:1.65}
+.go{display:inline-block;margin-top:14px;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.18);
+ color:#fff;text-decoration:none;font-size:.85rem;letter-spacing:.08em;backdrop-filter:blur(3px);text-shadow:0 1px 6px var(--shade)}
+.quote{position:absolute;left:0;right:0;bottom:0;padding:56px 20px calc(14px + env(safe-area-inset-bottom,0px));
+ background:linear-gradient(to bottom,rgba(60,45,20,0),rgba(60,45,20,.45));text-align:center;font-family:var(--round);color:#fff;text-shadow:0 1px 8px rgba(50,35,10,.55)}
+.quote p{margin:0;font-size:.95rem;line-height:1.7;letter-spacing:.06em}
+.quote cite{display:block;font-style:normal;font-size:.7rem;opacity:.9;margin-top:4px;letter-spacing:.04em}
+</style></head><body>
+<div class="stage" id="stage">
+  <video src="walk.mp4" poster="s1.jpg" autoplay muted loop playsinline></video>
+  <canvas id="cv"></canvas>
+  <div class="sky">
+    <div class="title">櫻梅桃李　花開滿山</div>
+    <div class="count">286<small> / 948</small></div>
+    <div class="where">今天是 2026/11/17<br>我們正走在杉林山徑<br>還有 662 朵花等待灌溉培育</div>
+    <a class="go" href="../ywd.html">各區花開進度 ›</a>
+  </div>
+  <div class="quote"><p>「一度結下的佛緣，等時機成熟，<br>必然會發芽、開花。」</p><cite>——池田大作《創造幸福與和平的智慧》14-3</cite></div>
+</div>
+<script>
+// 近 7 天各區新增（每天自動更新時算出）：一朵花＝一張個人資料卡
+const WEEK = {"永和區": 1, "中和區": 2};
+const stage=document.getElementById("stage"), cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+let W,H; function rs(){const r=stage.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0)} addEventListener("resize",rs); rs();
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FONT='"Huninn","PingFang TC","Microsoft JhengHei",sans-serif';
+const PINKS=[["#ffd3df","#f19bb3"],["#fff3f6","#f4b6c8"],["#ffe1c9","#f0a77e"],["#fdf6d8","#e9c45a"]]; // 櫻・梅・桃・李
+function flower(x,y,r,rot,pal,glow){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(rot);
+  if(glow>0){const g=ctx.createRadialGradient(0,0,0,0,0,r*3.2);g.addColorStop(0,`rgba(255,240,245,${.55*glow})`);g.addColorStop(1,"rgba(255,240,245,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r*3.2,0,Math.PI*2);ctx.fill()}
+  for(let k=0;k<5;k++){ctx.rotate(Math.PI*2/5);ctx.fillStyle=pal[0];ctx.beginPath();ctx.ellipse(0,r*.85,r*.52,r*.95,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=pal[1];ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(0,r*.25);ctx.lineTo(0,r*1.2);ctx.stroke()}
+  ctx.fillStyle="#f2c14e";ctx.beginPath();ctx.arc(0,0,r*.32,0,Math.PI*2);ctx.fill(); ctx.restore();
+}
+function label(x,y,name,n,a){
+  if(a<=0) return; ctx.save(); ctx.globalAlpha=a; ctx.textAlign="center"; ctx.shadowColor="rgba(40,70,110,.55)"; ctx.shadowBlur=8;
+  ctx.font=`15px ${FONT}`; ctx.fillStyle="#fff"; ctx.fillText(name,x,y);
+  const w=ctx.measureText(name).width; ctx.font=`12px ${FONT}`; ctx.fillStyle="#ffe3ea"; ctx.fillText(`+${n}`,x+w/2+12,y-1); ctx.restore();
+}
+let drift=[]; function spawnDrift(y){drift.push({x:Math.random()*W,y:y??-12,r:2.4+Math.random()*2.4,vy:20+Math.random()*20,sw:Math.random()*6.3,rot:Math.random()*6.3,p:PINKS[drift.length%4]})}
+for(let i=0;i<20;i++) spawnDrift(Math.random()*H);
+const queue=Object.keys(WEEK); // 一區一朵，標 +N
+const landed=[], falling=[];
+function landingSpot(i){const left=i%2===0, x=left? W*(.06+Math.random()*.26) : W*(.68+Math.random()*.26); return {x, y:H*(.64+Math.random()*.16)}}
+let qi=0;
+function drop(){ if(qi>=queue.length) return; const d=queue[qi], t=landingSpot(qi); qi++;
+  falling.push({d,n:WEEK[d],x:t.x+(Math.random()-.5)*60,y:H*.42,tx:t.x,ty:t.y,sw:Math.random()*6.3,rot:0,pal:PINKS[qi%4],r:6}); }
+if(!reduce){ drop(); setInterval(drop,2400); }
+else queue.forEach((d,i)=>{const t=landingSpot(i);landed.push({d,n:WEEK[d],x:t.x,y:t.y,pal:PINKS[i%4],r:6,bloom:1,lab:0,rot:0})});
+let spot=-1, spotT=0, last=performance.now(), T=0;
+function tick(now){const dt=Math.min(.05,(now-last)/1000); last=now; T+=dt; ctx.clearRect(0,0,W,H);
+  if(!reduce){
+    if(drift.length<26 && Math.random()<.4) spawnDrift();
+    drift=drift.filter(f=>f.y<H+20); for(const f of drift){f.y+=f.vy*dt;f.sw+=dt*1.4;f.rot+=dt;flower(f.x+Math.sin(f.sw)*14,f.y,f.r,f.rot,f.p,0)}
+  }
+  landed.forEach((f,i)=>{ f.bloom=Math.min(1,f.bloom+dt*1.6); const sway=Math.sin(T*1.3+i)*.12;
+    flower(f.x,f.y,f.r*(.4+.6*f.bloom),f.rot+sway,f.pal, i===spot?Math.sin(Math.min(1,spotT/2.6)*Math.PI):0);
+    if(f.lab>0){ f.lab=Math.max(0,f.lab-dt*.45); label(f.x,f.y-16,f.d,f.n,Math.min(1,f.lab)); } });
+  for(let k=falling.length-1;k>=0;k--){ const f=falling[k]; f.sw+=dt*1.2; f.rot+=dt*.9;
+    f.y+=dt*28; f.x+=(f.tx-f.x)*dt*.35; const x=f.x+Math.sin(f.sw)*12;
+    flower(x,f.y,f.r,f.rot,f.pal,.6); label(x,f.y-16,f.d,f.n,1);
+    if(f.y>=f.ty){ landed.push({d:f.d,n:f.n,x,y:f.ty,pal:f.pal,r:f.r,bloom:.2,lab:2.2,rot:f.rot}); falling.splice(k,1); } }
+  if(qi>=queue.length && !falling.length && landed.length){ spotT+=dt; if(spot<0||spotT>3.2){ spot=Math.floor(Math.random()*landed.length); spotT=0; landed[spot].lab=2.4; } }
+  requestAnimationFrame(tick)}
+(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>requestAnimationFrame(tick));
+</script>
+</body></html>
